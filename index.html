@@ -4,6 +4,9 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Budget - Jason Reed</title>
+    <!-- Icône de l'onglet (Favicon) -->
+    <link rel="icon" type="image/png" href="https://cdn-icons-png.flaticon.com/512/2910/2910203.png">
+    
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://unpkg.com/lucide@latest"></script>
     <style>
@@ -67,6 +70,16 @@
         ::-webkit-scrollbar-track { background: transparent; }
         ::-webkit-scrollbar-thumb { background: rgba(255, 255, 255, 0.1); border-radius: 10px; }
         ::-webkit-scrollbar-thumb:hover { background: rgba(255, 255, 255, 0.2); }
+
+        .undo-btn-active {
+            animation: pulse-red 2s infinite;
+        }
+
+        @keyframes pulse-red {
+            0% { box-shadow: 0 0 0 0 rgba(244, 63, 94, 0.4); }
+            70% { box-shadow: 0 0 0 10px rgba(244, 63, 94, 0); }
+            100% { box-shadow: 0 0 0 0 rgba(244, 63, 94, 0); }
+        }
     </style>
 </head>
 <body class="min-h-screen">
@@ -126,7 +139,7 @@
         </div>
 
         <!-- Stats Grid -->
-        <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-12">
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
             <div class="glass-card p-7 rounded-[24px] relative overflow-hidden group">
                 <p class="text-slate-400 text-xs font-bold uppercase tracking-widest mb-2">Revenus semaine</p>
                 <div id="totalIncome" class="text-3xl font-bold text-emerald-400">0,00 €</div>
@@ -141,6 +154,14 @@
                 <p class="text-slate-300 text-xs font-bold uppercase tracking-widest mb-2">Solde actuel (Total)</p>
                 <div id="netBalance" class="text-3xl font-black text-white">0,00 €</div>
             </div>
+        </div>
+
+        <!-- Undo Shortcut (New) -->
+        <div id="undoContainer" class="mb-12 flex justify-center opacity-0 pointer-events-none transition-all duration-300">
+            <button id="undoBtn" onclick="confirmUndo()" class="group bg-rose-500/10 hover:bg-rose-500 text-rose-500 hover:text-white border border-rose-500/20 px-6 py-3 rounded-2xl text-xs font-black uppercase tracking-widest flex items-center gap-3 transition-all">
+                <i data-lucide="rotate-ccw" class="w-4 h-4"></i>
+                <span>Annuler la dernière opération</span>
+            </button>
         </div>
 
         <div class="grid grid-cols-1 lg:grid-cols-12 gap-10">
@@ -260,8 +281,10 @@
         let appData = {
             currentBudgetId: '',
             currentThemeId: 'indigo',
-            budgets: {} // Structure: { id: { name, transactions, carriedOver } }
+            budgets: {} 
         };
+
+        let undoState = false;
 
         const getWeekNumber = (d) => {
             d = new Date(Date.UTC(d.getFullYear(), d.getMonth(), d.getDate()));
@@ -276,7 +299,6 @@
             return `${year}-W${week}`;
         };
 
-        // Calcule le solde final d'un budget spécifique
         const calculateFinalBalance = (budgetId) => {
             const budget = appData.budgets[budgetId];
             if (!budget) return 0;
@@ -288,11 +310,9 @@
             return total;
         };
 
-        // Trouve l'ID de la semaine précédente
         const getPreviousWeekId = (currentId) => {
             const ids = Object.keys(appData.budgets).sort((a, b) => b.localeCompare(a));
             const currentIndex = ids.indexOf(currentId);
-            // S'il y a une semaine plus ancienne dans les données triées
             return ids[currentIndex + 1] || null;
         };
 
@@ -301,7 +321,6 @@
             const [year, week] = getWeekNumber(new Date());
             
             if (!appData.budgets[currentId]) {
-                // Chercher le report de la semaine précédente enregistrée
                 const prevId = getPreviousWeekId(currentId);
                 const carryOverValue = prevId ? calculateFinalBalance(prevId) : 0;
 
@@ -401,6 +420,39 @@
             saveData();
         };
 
+        const confirmUndo = () => {
+            const btn = document.getElementById('undoBtn');
+            const span = btn.querySelector('pointer-events-none'); // Dummy selector to target text
+            
+            if (!undoState) {
+                undoState = true;
+                btn.classList.add('undo-btn-active', 'bg-rose-500', 'text-white');
+                btn.querySelector('span').innerText = "Confirmer l'annulation ?";
+                setTimeout(() => {
+                    if(undoState) resetUndoBtn();
+                }, 3000);
+            } else {
+                performUndo();
+            }
+        };
+
+        const resetUndoBtn = () => {
+            undoState = false;
+            const btn = document.getElementById('undoBtn');
+            btn.classList.remove('undo-btn-active', 'bg-rose-500', 'text-white');
+            btn.querySelector('span').innerText = "Annuler la dernière opération";
+        };
+
+        const performUndo = () => {
+            const budget = getActiveBudget();
+            if (budget.transactions.length > 0) {
+                budget.transactions.shift();
+                saveData();
+                showToast("Dernière opération annulée");
+            }
+            resetUndoBtn();
+        };
+
         const switchBudget = (id) => {
             appData.currentBudgetId = id;
             saveData();
@@ -488,7 +540,6 @@
             document.getElementById('totalIncome').innerText = inc.toLocaleString('fr-FR', { style: 'currency', currency: 'EUR' });
             document.getElementById('totalExpenses').innerText = exp.toLocaleString('fr-FR', { style: 'currency', currency: 'EUR' });
             
-            // Calcul final : Report + revenus - dépenses
             const balance = (budget.carriedOver || 0) + inc - exp;
             
             const balanceEl = document.getElementById('netBalance');
@@ -496,6 +547,14 @@
             balanceEl.className = `text-3xl font-black ${balance < 0 ? 'text-rose-400' : 'text-white'}`;
             
             document.getElementById('transCount').innerText = budget.transactions.length;
+
+            // Update Undo Button Visibility
+            const undoContainer = document.getElementById('undoContainer');
+            if (budget.transactions.length > 0) {
+                undoContainer.classList.remove('opacity-0', 'pointer-events-none');
+            } else {
+                undoContainer.classList.add('opacity-0', 'pointer-events-none');
+            }
 
             const listEl = document.getElementById('transactionList');
             const emptyEl = document.getElementById('emptyState');
