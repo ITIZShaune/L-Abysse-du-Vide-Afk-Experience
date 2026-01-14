@@ -3,682 +3,433 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Budget - Jason Reed</title>
-    <!-- Icône de l'onglet (Favicon) -->
-    <link rel="icon" type="image/png" href="https://cdn-icons-png.flaticon.com/512/2910/2910203.png">
-    
+    <title>Ethereal Forge - AFK Idle Game</title>
     <script src="https://cdn.tailwindcss.com"></script>
-    <script src="https://unpkg.com/lucide@latest"></script>
-    <!-- Chart.js pour les graphiques -->
-    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-
+    <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;700&family=Raleway:wght@300;400;600&display=swap" rel="stylesheet">
     <style>
-        @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700&display=swap');
-        
         :root {
-            --primary: #6366f1;
-            --primary-hover: #4f46e5;
-            --primary-light: rgba(99, 102, 241, 0.15);
-            --bg-site: #0f172a; 
-            --card-bg: rgba(30, 41, 59, 0.7); 
-            --border-color: rgba(255, 255, 255, 0.08);
+            --gold: #d4af37;
+            --iron: #434343;
+            --mystic: #6366f1;
         }
 
-        body { 
-            font-family: 'Plus Jakarta Sans', sans-serif; 
-            background-color: var(--bg-site);
-            color: #f1f5f9;
-            transition: background-color 0.5s cubic-bezier(0.4, 0, 0.2, 1);
-            background-image: radial-gradient(circle at top right, rgba(99, 102, 241, 0.05), transparent),
-                              radial-gradient(circle at bottom left, rgba(99, 102, 241, 0.03), transparent);
+        body {
+            background: radial-gradient(circle at center, #1a1a1a 0%, #0a0a0a 100%);
+            color: #e5e5e5;
+            font-family: 'Raleway', sans-serif;
+            overflow-x: hidden;
+            min-height: 100vh;
+        }
+
+        h1, h2, .font-cinzel {
+            font-family: 'Cinzel', serif;
+        }
+
+        .glass-panel {
+            background: rgba(255, 255, 255, 0.03);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 1rem;
+        }
+
+        .forge-btn {
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .forge-btn:active {
+            transform: scale(0.95);
+        }
+
+        .forge-btn::after {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: radial-gradient(circle, rgba(255,165,0,0.2) 0%, transparent 70%);
+            opacity: 0;
+            transition: opacity 0.3s;
+        }
+
+        .forge-btn:hover::after {
+            opacity: 1;
+        }
+
+        .particle {
+            position: absolute;
+            pointer-events: none;
+            animation: rise 2s ease-out forwards;
+        }
+
+        @keyframes rise {
+            0% { transform: translateY(0) scale(1); opacity: 1; }
+            100% { transform: translateY(-100px) scale(0); opacity: 0; }
+        }
+
+        .easter-egg {
+            position: fixed;
+            cursor: pointer;
+            z-index: 50;
+            filter: drop-shadow(0 0 15px var(--mystic));
+            animation: drift 10s linear infinite;
+            display: none;
+        }
+
+        @keyframes drift {
+            0% { transform: translate(-100vw, 20vh) rotate(0deg); }
+            100% { transform: translate(100vw, 80vh) rotate(360deg); }
+        }
+
+        .achievement-toast {
+            position: fixed;
+            bottom: 20px;
+            right: -300px;
+            transition: right 0.5s ease-in-out;
+        }
+
+        .achievement-toast.show {
+            right: 20px;
         }
         
-        .glass-card {
-            background: var(--card-bg);
-            backdrop-filter: blur(16px);
-            -webkit-backdrop-filter: blur(16px);
-            border: 1px solid var(--border-color);
-            box-shadow: 0 4px 30px rgba(0, 0, 0, 0.1);
-            transition: transform 0.2s ease, border-color 0.3s ease;
+        .progress-bar {
+            height: 4px;
+            background: #333;
+            border-radius: 2px;
+            overflow: hidden;
         }
-
-        .glass-card:hover {
-            border-color: rgba(255, 255, 255, 0.15);
-        }
-
-        .bg-primary { background-color: var(--primary); }
-        .text-primary { color: var(--primary); }
-        .border-primary { border-color: var(--primary); }
-        .hover-bg-primary:hover { background-color: var(--primary-hover); }
-        
-        .input-dark {
-            background: rgba(15, 23, 42, 0.6);
-            border: 1px solid var(--border-color);
-            color: #f1f5f9;
-            transition: all 0.2s ease;
-        }
-
-        .input-dark:focus {
-            border-color: var(--primary);
-            outline: none;
-            box-shadow: 0 0 0 3px var(--primary-light);
-        }
-
-        select option {
-            background-color: #1e293b;
-            color: #f1f5f9;
-        }
-
-        ::-webkit-scrollbar { width: 8px; }
-        ::-webkit-scrollbar-track { background: transparent; }
-        ::-webkit-scrollbar-thumb { background: rgba(255, 255, 255, 0.1); border-radius: 10px; }
-        ::-webkit-scrollbar-thumb:hover { background: rgba(255, 255, 255, 0.2); }
-
-        .undo-btn-active {
-            animation: pulse-red 2s infinite;
-        }
-
-        @keyframes pulse-red {
-            0% { box-shadow: 0 0 0 0 rgba(244, 63, 94, 0.4); }
-            70% { box-shadow: 0 0 0 10px rgba(244, 63, 94, 0); }
-            100% { box-shadow: 0 0 0 0 rgba(244, 63, 94, 0); }
+        .progress-fill {
+            height: 100%;
+            background: var(--gold);
+            width: 0%;
+            transition: width 0.1s linear;
         }
     </style>
 </head>
-<body class="min-h-screen">
+<body class="p-4 md:p-8">
 
-    <!-- En-tête / Navigation -->
-    <nav class="border-b border-white/5 bg-slate-900/40 backdrop-blur-xl sticky top-0 z-30">
-        <div class="max-w-5xl mx-auto px-6">
-            <div class="flex justify-between h-20 items-center">
-                <div class="flex items-center gap-3">
-                    <div class="bg-primary p-2.5 rounded-xl shadow-lg shadow-primary/20 transition-all duration-500">
-                        <i data-lucide="zap" class="text-white w-6 h-6"></i>
-                    </div>
-                    <div>
-                        <h1 class="text-xl font-extrabold tracking-tight text-white">Jason Reed</h1>
-                        <p class="text-[10px] text-slate-500 font-bold uppercase tracking-widest">Finance Automatisée</p>
-                    </div>
-                </div>
-                
-                <div class="flex items-center gap-2">
-                    <button onclick="openChartModal()" class="p-2.5 text-slate-400 hover:text-primary hover:bg-primary/10 rounded-xl transition-all" title="Graphiques">
-                        <i data-lucide="pie-chart" class="w-5 h-5"></i>
-                    </button>
-                    <button onclick="toggleThemeModal()" class="p-2.5 text-slate-400 hover:text-white hover:bg-white/5 rounded-xl transition-all" title="Thèmes">
-                        <i data-lucide="palette" class="w-5 h-5"></i>
-                    </button>
-                    <button onclick="openBudgetList()" class="hidden sm:flex items-center gap-2 px-4 py-2.5 text-sm font-semibold text-slate-300 hover:text-white transition-all">
-                        <i data-lucide="layers" class="w-4 h-4"></i>
-                        Archives
-                    </button>
-                    <button onclick="checkAndCreateWeeklyBudget()" class="bg-primary/20 text-primary border border-primary/30 px-4 py-2.5 rounded-xl text-sm font-bold transition-all hover:bg-primary hover:text-white flex items-center gap-2">
-                        <i data-lucide="refresh-cw" class="w-4 h-4"></i>
-                        <span class="hidden md:inline">Actualiser Semaine</span>
-                    </button>
-                </div>
+    <!-- Header Stats -->
+    <header class="max-w-6xl mx-auto mb-8 flex flex-col md:flex-row justify-between items-center gap-4">
+        <div>
+            <h1 class="text-4xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-yellow-500 to-orange-700">ETHEREAL FORGE</h1>
+            <p class="text-gray-400 italic text-sm">Le feu ne s'éteint jamais...</p>
+        </div>
+        <div class="flex gap-8">
+            <div class="text-center">
+                <span class="block text-xs uppercase tracking-widest text-gray-500">Essence d'Âme</span>
+                <span id="currency" class="text-3xl font-bold text-indigo-400">0</span>
+            </div>
+            <div class="text-center">
+                <span class="block text-xs uppercase tracking-widest text-gray-500">Puissance</span>
+                <span id="power" class="text-3xl font-bold text-orange-500">1</span>
             </div>
         </div>
-    </nav>
+    </header>
 
-    <main class="max-w-5xl mx-auto px-6 py-10">
+    <main class="max-w-6xl mx-auto grid grid-cols-1 lg:grid-cols-3 gap-8">
         
-        <!-- Dashboard Intro -->
-        <div class="mb-10 flex flex-col md:flex-row md:items-end justify-between gap-6">
-            <div class="space-y-1">
-                <h2 id="currentBudgetName" class="text-3xl font-bold text-white tracking-tight italic">Initialisation...</h2>
-                <div class="flex items-center gap-2 text-slate-400">
-                    <i data-lucide="calendar" class="w-4 h-4 text-primary"></i>
-                    <span id="currentDateDisplay" class="text-sm font-medium">--</span>
+        <!-- Left: Improvements -->
+        <section class="space-y-4">
+            <h2 class="text-xl font-bold border-b border-gray-800 pb-2">Améliorations</h2>
+            
+            <div class="glass-panel p-4 flex justify-between items-center group cursor-pointer hover:bg-white/5" onclick="buyUpgrade('anvil')">
+                <div>
+                    <h3 class="font-bold text-gray-200">Enclume de Fer</h3>
+                    <p class="text-xs text-gray-400">+1 par clic</p>
+                    <p class="text-sm text-yellow-500 mt-1 italic">Niv. <span id="anvil-lvl">0</span></p>
+                </div>
+                <button class="bg-gray-800 px-4 py-2 rounded text-sm font-bold group-hover:bg-yellow-600 transition-colors">
+                    <span id="anvil-cost">10</span> ✨
+                </button>
+            </div>
+
+            <div class="glass-panel p-4 flex justify-between items-center group cursor-pointer hover:bg-white/5" onclick="buyUpgrade('bellows')">
+                <div>
+                    <h3 class="font-bold text-gray-200">Soufflet Magique</h3>
+                    <p class="text-xs text-gray-400">+1 auto / sec</p>
+                    <p class="text-sm text-yellow-500 mt-1 italic">Niv. <span id="bellows-lvl">0</span></p>
+                </div>
+                <button class="bg-gray-800 px-4 py-2 rounded text-sm font-bold group-hover:bg-indigo-600 transition-colors">
+                    <span id="bellows-cost">50</span> ✨
+                </button>
+            </div>
+
+            <div class="glass-panel p-4 flex justify-between items-center group cursor-pointer hover:bg-white/5" onclick="buyUpgrade('spirit')">
+                <div>
+                    <h3 class="font-bold text-gray-200">Esprit de Forge</h3>
+                    <p class="text-xs text-gray-400">+10 auto / sec</p>
+                    <p class="text-sm text-yellow-500 mt-1 italic">Niv. <span id="spirit-lvl">0</span></p>
+                </div>
+                <button class="bg-gray-800 px-4 py-2 rounded text-sm font-bold group-hover:bg-purple-600 transition-colors">
+                    <span id="spirit-cost">500</span> ✨
+                </button>
+            </div>
+        </section>
+
+        <!-- Center: Interaction -->
+        <section class="flex flex-col items-center justify-center space-y-8 py-12">
+            <div id="forge-click" class="forge-btn w-64 h-64 rounded-full flex items-center justify-center cursor-pointer bg-gradient-to-br from-gray-800 to-black shadow-2xl border-4 border-gray-700 hover:border-orange-500 relative">
+                <svg viewBox="0 0 24 24" class="w-32 h-32 fill-orange-500 drop-shadow-lg" xmlns="http://www.w3.org/2000/svg">
+                    <path d="M21,16.5C21,16.88 20.79,17.21 20.47,17.38L12.57,21.82C12.41,21.94 12.21,22 12,22C11.79,22 11.59,21.94 11.43,21.82L3.53,17.38C3.21,17.21 3,16.88 3,16.5V7.5C3,7.12 3.21,6.79 3.53,6.62L11.43,2.18C11.59,2.06 11.79,2 12,2C12.21,2 12.41,2.06 12.57,2.18L20.47,6.62C20.79,6.79 21,7.12 21,7.5V16.5Z" />
+                </svg>
+                <div id="click-ripple" class="absolute inset-0 rounded-full opacity-0 bg-orange-400 scale-0"></div>
+            </div>
+            <div class="w-full max-w-xs space-y-2">
+                <div class="flex justify-between text-xs text-gray-500 uppercase tracking-tighter">
+                    <span>Rechargement Mystique</span>
+                    <span id="auto-rate">0 / sec</span>
+                </div>
+                <div class="progress-bar">
+                    <div id="auto-progress" class="progress-fill"></div>
                 </div>
             </div>
-            <div class="flex flex-col items-end gap-1">
-                <div class="bg-emerald-500/10 text-emerald-400 px-4 py-2 rounded-lg border border-emerald-500/20 text-xs font-bold flex items-center gap-2">
-                    <span class="relative flex h-2 w-2">
-                      <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
-                      <span class="relative inline-flex rounded-full h-2 w-2 bg-emerald-500"></span>
-                    </span>
-                    Report automatique actif
-                </div>
-                <p class="text-[10px] text-slate-500 uppercase font-bold tracking-tighter">Report semaine précédente : <span id="carriedOverDisplay">0,00 €</span></p>
+        </section>
+
+        <!-- Right: Achievements & Time -->
+        <section class="space-y-4">
+            <h2 class="text-xl font-bold border-b border-gray-800 pb-2">Succès & Temps</h2>
+            <div class="glass-panel p-4">
+                <p class="text-xs text-gray-500 uppercase">Temps de Méditation</p>
+                <p id="play-time" class="text-2xl font-mono text-gray-300">00:00:00</p>
             </div>
-        </div>
-
-        <!-- Stats Grid -->
-        <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
-            <div class="glass-card p-7 rounded-[24px] relative overflow-hidden group">
-                <p class="text-slate-400 text-xs font-bold uppercase tracking-widest mb-2">Revenus semaine</p>
-                <div id="totalIncome" class="text-3xl font-bold text-emerald-400">0,00 €</div>
+            
+            <div id="achievements-list" class="space-y-2 max-h-[400px] overflow-y-auto pr-2">
+                <!-- Achievements injected here -->
             </div>
-
-            <div class="glass-card p-7 rounded-[24px] relative overflow-hidden group">
-                <p class="text-slate-400 text-xs font-bold uppercase tracking-widest mb-2">Dépenses semaine</p>
-                <div id="totalExpenses" class="text-3xl font-bold text-rose-400">0,00 €</div>
-            </div>
-
-            <div class="glass-card p-7 rounded-[24px] relative overflow-hidden border-primary/20 bg-primary/5 group">
-                <p class="text-slate-300 text-xs font-bold uppercase tracking-widest mb-2">Solde actuel (Total)</p>
-                <div id="netBalance" class="text-3xl font-black text-white">0,00 €</div>
-            </div>
-        </div>
-
-        <!-- Undo Shortcut -->
-        <div id="undoContainer" class="mb-12 flex justify-center opacity-0 pointer-events-none transition-all duration-300">
-            <button id="undoBtn" onclick="confirmUndo()" class="group bg-rose-500/10 hover:bg-rose-500 text-rose-500 hover:text-white border border-rose-500/20 px-6 py-3 rounded-2xl text-xs font-black uppercase tracking-widest flex items-center gap-3 transition-all">
-                <i data-lucide="rotate-ccw" class="w-4 h-4"></i>
-                <span>Annuler la dernière opération</span>
-            </button>
-        </div>
-
-        <div class="grid grid-cols-1 lg:grid-cols-12 gap-10">
-            <!-- Formulaire -->
-            <div class="lg:col-span-4">
-                <div class="glass-card p-8 rounded-[28px] sticky top-28">
-                    <div class="flex items-center gap-3 mb-6">
-                        <div class="w-2 h-8 bg-primary rounded-full"></div>
-                        <h3 id="formTitle" class="text-xl font-bold text-white">Nouvelle entrée</h3>
-                    </div>
-                    
-                    <form id="transactionForm" class="space-y-5">
-                        <input type="hidden" id="editId">
-                        
-                        <div>
-                            <label class="block text-xs font-bold text-slate-500 uppercase tracking-widest mb-2">Désignation</label>
-                            <select id="presetSelect" onchange="handleDesignationChange()" class="input-dark w-full px-4 py-3 rounded-xl focus:ring-primary cursor-pointer mb-3">
-                                <option value="" disabled selected>Choisir une catégorie...</option>
-                                <option value="Mécano">Mécano</option>
-                                <option value="Immobilier">Immobilier</option>
-                                <option value="Restaurant">Restaurant</option>
-                                <option value="SAHP">SAHP</option>
-                                <option value="SAMS">SAMS</option>
-                                <option value="Travail">Travail</option>
-                                <option value="Facture Personnelle">Facture Personnelle</option>
-                                <option value="Autre">Autre...</option>
-                            </select>
-                            <input type="text" id="otherDescription" placeholder="Précisez la désignation..." class="hidden input-dark w-full px-4 py-3 rounded-xl focus:ring-primary">
-                        </div>
-
-                        <div class="grid grid-cols-2 gap-4">
-                            <div>
-                                <label class="block text-xs font-bold text-slate-500 uppercase tracking-widest mb-2">Montant (€)</label>
-                                <input type="number" id="amount" step="0.01" required placeholder="0.00" class="input-dark w-full px-4 py-3 rounded-xl">
-                            </div>
-                            <div>
-                                <label class="block text-xs font-bold text-slate-500 uppercase tracking-widest mb-2">Type</label>
-                                <select id="type" class="input-dark w-full px-4 py-3 rounded-xl cursor-pointer">
-                                    <option value="expense">Dépense</option>
-                                    <option value="income">Revenu</option>
-                                </select>
-                            </div>
-                        </div>
-                        <div class="pt-4 space-y-3">
-                            <button type="submit" id="submitBtn" class="w-full bg-primary hover-bg-primary text-white font-bold py-4 rounded-xl transition-all shadow-xl shadow-primary/20 flex items-center justify-center gap-2">
-                                <i data-lucide="check" class="w-5 h-5"></i>
-                                Enregistrer
-                            </button>
-                            <button type="button" id="cancelEdit" class="hidden w-full py-3 text-slate-400 hover:text-white font-semibold transition-all" onclick="resetForm()">
-                                Annuler
-                            </button>
-                        </div>
-                    </form>
-                </div>
-            </div>
-
-            <!-- Liste des transactions -->
-            <div class="lg:col-span-8">
-                <div class="flex items-center justify-between mb-6">
-                    <h3 class="text-lg font-bold text-white flex items-center gap-2">
-                        Opérations de la semaine
-                        <span id="transCount" class="bg-white/10 text-slate-400 text-[10px] px-2 py-0.5 rounded-full">0</span>
-                    </h3>
-                </div>
-
-                <div id="transactionList" class="space-y-4"></div>
-
-                <div id="emptyState" class="hidden py-20 text-center glass-card rounded-[28px]">
-                    <p class="text-slate-500 font-medium italic">Commencez à noter vos dépenses pour cette semaine.</p>
-                </div>
-            </div>
-        </div>
+        </section>
     </main>
 
-    <!-- Modale Graphique -->
-    <div id="chartModal" class="fixed inset-0 bg-slate-950/90 backdrop-blur-xl z-50 hidden flex items-center justify-center p-6">
-        <div class="glass-card bg-slate-900 w-full max-w-2xl rounded-[32px] overflow-hidden border-white/10 shadow-2xl animate-in zoom-in-95 duration-200">
-            <div class="p-8 border-b border-white/5 flex justify-between items-center">
-                <div class="flex items-center gap-3">
-                    <div class="p-2 bg-primary/20 text-primary rounded-lg"><i data-lucide="pie-chart" class="w-5 h-5"></i></div>
-                    <h3 class="text-2xl font-bold text-white">Répartition des dépenses</h3>
-                </div>
-                <button onclick="closeChartModal()" class="text-slate-500 hover:text-white transition-colors"><i data-lucide="x" class="w-6 h-6"></i></button>
-            </div>
-            <div class="p-10 flex flex-col items-center">
-                <div id="chartContainer" class="w-full max-w-[400px] aspect-square relative">
-                    <canvas id="expenseChart"></canvas>
-                </div>
-                <div id="chartLegend" class="mt-8 w-full grid grid-cols-2 gap-4"></div>
-            </div>
-        </div>
-    </div>
+    <!-- Easter Egg Container -->
+    <div id="easter-egg" class="easter-egg text-4xl" onclick="triggerEasterEgg()">✨</div>
 
-    <!-- Modale Archives -->
-    <div id="budgetModal" class="fixed inset-0 bg-slate-950/80 backdrop-blur-md z-50 hidden flex items-center justify-center p-6">
-        <div class="glass-card bg-slate-900 w-full max-w-md rounded-[32px] overflow-hidden border-white/10 shadow-2xl">
-            <div class="p-8 border-b border-white/5 flex justify-between items-center">
-                <h3 class="text-2xl font-bold text-white">Historique Hebdomadaire</h3>
-                <button onclick="closeBudgetModal()" class="text-slate-500 hover:text-white transition-colors"><i data-lucide="x" class="w-6 h-6"></i></button>
-            </div>
-            <div id="budgetListItems" class="p-6 max-h-[50vh] overflow-y-auto space-y-3"></div>
+    <!-- Achievement Toast -->
+    <div id="toast" class="achievement-toast glass-panel p-4 bg-indigo-900/50 border-indigo-500 flex items-center gap-4 shadow-2xl">
+        <div class="text-2xl">🏆</div>
+        <div>
+            <h4 class="font-bold text-sm">Succès Débloqué !</h4>
+            <p id="toast-desc" class="text-xs text-gray-300">Description du succès</p>
         </div>
-    </div>
-
-    <!-- Modale Thèmes -->
-    <div id="themeModal" class="fixed inset-0 bg-slate-950/80 backdrop-blur-md z-50 hidden flex items-center justify-center p-6">
-        <div class="glass-card bg-slate-900 w-full max-w-lg rounded-[32px] overflow-hidden border-white/10 shadow-2xl">
-            <div class="p-8 border-b border-white/5 flex justify-between items-center">
-                <h3 class="text-2xl font-bold text-white">Apparence</h3>
-                <button onclick="toggleThemeModal()" class="text-slate-500 hover:text-white transition-colors"><i data-lucide="x" class="w-6 h-6"></i></button>
-            </div>
-            <div class="p-8 grid grid-cols-2 sm:grid-cols-3 gap-4" id="themeGrid"></div>
-        </div>
-    </div>
-
-    <!-- Toast UI -->
-    <div id="toast" class="fixed bottom-10 left-1/2 -translate-x-1/2 px-8 py-4 bg-primary text-white rounded-2xl shadow-2xl text-sm font-bold translate-y-32 opacity-0 transition-all duration-500 z-50 flex items-center gap-3">
-        <i data-lucide="check-circle" class="w-5 h-5"></i>
-        <span id="toastMsg">Action effectuée</span>
     </div>
 
     <script>
-        const themes = [
-            { id: 'indigo', name: 'Néon Indigo', primary: '#6366f1', hover: '#4f46e5', bg: '#0f172a' },
-            { id: 'emerald', name: 'Émeraude Vert', primary: '#10b981', hover: '#059669', bg: '#061a15' },
-            { id: 'crimson', name: 'Crimson Rouge', primary: '#f43f5e', hover: '#e11d48', bg: '#1a0d0f' },
-            { id: 'gold', name: 'Or Ambre', primary: '#f59e0b', hover: '#d97706', bg: '#1a1406' },
-            { id: 'cyan', name: 'Cyber Cyan', primary: '#06b6d4', hover: '#0891b2', bg: '#08161a' },
-            { id: 'violet', name: 'Ultra Violet', primary: '#a855f7', hover: '#9333ea', bg: '#140c1f' },
-            { id: 'slate', name: 'Monochrome', primary: '#94a3b8', hover: '#64748b', bg: '#111827' },
-            { id: 'lime', name: 'Lime Électrique', primary: '#84cc16', hover: '#65a30d', bg: '#0f1406' },
-            { id: 'orange', name: 'Magma Orange', primary: '#f97316', hover: '#ea580c', bg: '#1a1006' },
-            { id: 'fuchsia', name: 'Fuchsia Laser', primary: '#d946ef', hover: '#c026d3', bg: '#1a081a' }
+        // --- Game State ---
+        let gameState = {
+            currency: 0,
+            power: 1,
+            totalClicks: 0,
+            startTime: Date.now(),
+            playTimeSeconds: 0,
+            upgrades: {
+                anvil: { lvl: 0, baseCost: 10, multiplier: 1.5 },
+                bellows: { lvl: 0, baseCost: 50, multiplier: 1.7 },
+                spirit: { lvl: 0, baseCost: 500, multiplier: 1.9 }
+            },
+            achievements: []
+        };
+
+        const achievementsDef = [
+            { id: 'start', title: 'Premier Souffle', desc: 'Jouer 1 minute', target: 60, type: 'time' },
+            { id: 'apprentice', title: 'Apprenti Forgeron', desc: 'Jouer 10 minutes', target: 600, type: 'time' },
+            { id: 'master', title: 'Maître du Temps', desc: 'Jouer 1 heure', target: 3600, type: 'time' },
+            { id: 'click100', title: 'Main Agile', desc: 'Cliquer 100 fois', target: 100, type: 'clicks' }
         ];
 
-        let appData = {
-            currentBudgetId: '',
-            currentThemeId: 'indigo',
-            budgets: {} 
-        };
-
-        let undoState = false;
-        let myChart = null;
-
-        const getWeekNumber = (d) => {
-            d = new Date(Date.UTC(d.getFullYear(), d.getMonth(), d.getDate()));
-            d.setUTCDate(d.getUTCDate() + 4 - (d.getUTCDay() || 7));
-            const yearStart = new Date(Date.UTC(d.getUTCFullYear(), 0, 1));
-            const weekNo = Math.ceil((((d - yearStart) / 86400000) + 1) / 7);
-            return [d.getUTCFullYear(), weekNo];
-        };
-
-        const getCurrentWeeklyId = () => {
-            const [year, week] = getWeekNumber(new Date());
-            return `${year}-W${week}`;
-        };
-
-        const calculateFinalBalance = (budgetId) => {
-            const budget = appData.budgets[budgetId];
-            if (!budget) return 0;
-            let total = budget.carriedOver || 0;
-            budget.transactions.forEach(t => {
-                if (t.type === 'income') total += t.amount;
-                else total -= t.amount;
-            });
-            return total;
-        };
-
-        const getPreviousWeekId = (currentId) => {
-            const ids = Object.keys(appData.budgets).sort((a, b) => b.localeCompare(a));
-            const currentIndex = ids.indexOf(currentId);
-            return ids[currentIndex + 1] || null;
-        };
-
-        const checkAndCreateWeeklyBudget = () => {
-            const currentId = getCurrentWeeklyId();
-            const [year, week] = getWeekNumber(new Date());
+        // --- Core Logic ---
+        function init() {
+            loadGame();
+            updateUI();
             
-            if (!appData.budgets[currentId]) {
-                const prevId = getPreviousWeekId(currentId);
-                const carryOverValue = prevId ? calculateFinalBalance(prevId) : 0;
+            // Interaction
+            document.getElementById('forge-click').addEventListener('mousedown', clickForge);
+            
+            // Loops
+            setInterval(gameLoop, 1000);
+            setInterval(autoSave, 10000);
+            setInterval(checkEasterEgg, 30000); // Check every 30s
+            
+            renderAchievements();
+        }
 
-                appData.budgets[currentId] = {
-                    name: `Semaine ${week} - ${year}`,
-                    transactions: [],
-                    carriedOver: carryOverValue,
-                    isAutoGenerated: true
-                };
-                showToast(`Report de ${carryOverValue.toFixed(2)}€ appliqué.`);
+        function clickForge(e) {
+            gameState.currency += gameState.power;
+            gameState.totalClicks++;
+            
+            createParticle(e.clientX, e.clientY);
+            checkAchievements();
+            updateUI();
+            
+            // Visual feedback
+            const ripple = document.getElementById('click-ripple');
+            ripple.style.transform = 'scale(1)';
+            ripple.style.opacity = '0.3';
+            setTimeout(() => {
+                ripple.style.transform = 'scale(0)';
+                ripple.style.opacity = '0';
+            }, 200);
+        }
+
+        function gameLoop() {
+            // Update Time
+            gameState.playTimeSeconds = Math.floor((Date.now() - (gameState.startTime - (gameState.playTimeSeconds * 1000))) / 1000);
+            
+            // Auto Income
+            const autoIncome = (gameState.upgrades.bellows.lvl * 1) + (gameState.upgrades.spirit.lvl * 10);
+            if (autoIncome > 0) {
+                gameState.currency += autoIncome;
+                animateProgressBar();
             }
-            
-            appData.currentBudgetId = currentId;
-            saveData();
-        };
 
-        const handleDesignationChange = () => {
-            const select = document.getElementById('presetSelect');
-            const otherInput = document.getElementById('otherDescription');
-            if (select.value === 'Autre') {
-                otherInput.classList.remove('hidden');
-                otherInput.required = true;
-            } else {
-                otherInput.classList.add('hidden');
-                otherInput.required = false;
-                otherInput.value = '';
+            checkAchievements();
+            updateUI();
+        }
+
+        function buyUpgrade(id) {
+            const upgrade = gameState.upgrades[id];
+            const cost = Math.floor(upgrade.baseCost * Math.pow(upgrade.multiplier, upgrade.lvl));
+            
+            if (gameState.currency >= cost) {
+                gameState.currency -= cost;
+                upgrade.lvl++;
+                
+                if (id === 'anvil') {
+                    gameState.power = 1 + upgrade.lvl;
+                }
+                
+                updateUI();
             }
-        };
+        }
 
-        const loadData = () => {
-            const saved = localStorage.getItem('budgetJasonReed_v3_Weekly');
-            if (saved) {
-                appData = JSON.parse(saved);
+        // --- Systems ---
+        function createParticle(x, y) {
+            const p = document.createElement('div');
+            p.className = 'particle text-orange-400 font-bold';
+            p.style.left = x + 'px';
+            p.style.top = y + 'px';
+            p.innerText = '+' + gameState.power;
+            document.body.appendChild(p);
+            setTimeout(() => p.remove(), 2000);
+        }
+
+        function animateProgressBar() {
+            const fill = document.getElementById('auto-progress');
+            fill.style.transition = 'none';
+            fill.style.width = '0%';
+            setTimeout(() => {
+                fill.style.transition = 'width 1s linear';
+                fill.style.width = '100%';
+            }, 50);
+        }
+
+        function checkEasterEgg() {
+            const rand = Math.random();
+            const egg = document.getElementById('easter-egg');
+            
+            // Probability: 5% Rare, 1% Hyper Rare
+            if (rand < 0.05) {
+                const isHyper = rand < 0.01;
+                egg.innerHTML = isHyper ? '💎' : '🔥';
+                egg.dataset.type = isHyper ? 'hyper' : 'rare';
+                egg.style.display = 'block';
+                
+                setTimeout(() => {
+                    egg.style.display = 'none';
+                }, 10000);
             }
+        }
+
+        function triggerEasterEgg() {
+            const egg = document.getElementById('easter-egg');
+            const type = egg.dataset.type;
+            const bonus = type === 'hyper' ? gameState.currency * 0.5 + 500 : gameState.currency * 0.1 + 50;
             
-            checkAndCreateWeeklyBudget();
-            
-            applyTheme(appData.currentThemeId || 'indigo');
-            document.getElementById('currentDateDisplay').innerText = new Intl.DateTimeFormat('fr-FR', { weekday: 'long', day: 'numeric', month: 'long' }).format(new Date());
-            render();
-            renderThemeOptions();
-        };
+            gameState.currency += Math.floor(bonus);
+            egg.style.display = 'none';
+            showToast("Easter Egg !", "Bonus récolté : " + Math.floor(bonus) + " ✨");
+        }
 
-        const saveData = () => {
-            localStorage.setItem('budgetJasonReed_v3_Weekly', JSON.stringify(appData));
-            render();
-        };
+        function checkAchievements() {
+            achievementsDef.forEach(ach => {
+                if (gameState.achievements.includes(ach.id)) return;
 
-        const applyTheme = (themeId) => {
-            const theme = themes.find(t => t.id === themeId) || themes[0];
-            document.documentElement.style.setProperty('--primary', theme.primary);
-            document.documentElement.style.setProperty('--primary-hover', theme.hover);
-            document.documentElement.style.setProperty('--bg-site', theme.bg);
-            document.documentElement.style.setProperty('--primary-light', theme.primary + '26');
-            appData.currentThemeId = themeId;
-            saveData();
-            if(myChart) updateChart(); // Rafraîchir les couleurs du graph si ouvert
-        };
+                let reached = false;
+                if (ach.type === 'time' && gameState.playTimeSeconds >= ach.target) reached = true;
+                if (ach.type === 'clicks' && gameState.totalClicks >= ach.target) reached = true;
 
-        const renderThemeOptions = () => {
-            const grid = document.getElementById('themeGrid');
-            grid.innerHTML = themes.map(t => `
-                <button onclick="applyTheme('${t.id}')" class="group flex flex-col items-center gap-3 p-4 rounded-2xl border-2 transition-all hover:bg-white/5 ${appData.currentThemeId === t.id ? 'border-primary bg-primary/10' : 'border-white/5'}">
-                    <div class="w-10 h-10 rounded-full shadow-lg" style="background-color: ${t.primary}"></div>
-                    <span class="text-[9px] font-black uppercase tracking-widest text-slate-500">${t.name}</span>
-                </button>
-            `).join('');
-        };
-
-        const getActiveBudget = () => appData.budgets[appData.currentBudgetId];
-
-        const addTransaction = (description, amount, type) => {
-            const budget = getActiveBudget();
-            budget.transactions.unshift({
-                id: Date.now().toString(),
-                description,
-                amount: parseFloat(amount),
-                type,
-                date: new Date().toLocaleDateString('fr-FR', {hour: '2-digit', minute:'2-digit'})
-            });
-            saveData();
-            showToast("Enregistré");
-        };
-
-        const updateTransaction = (id, description, amount, type) => {
-            const budget = getActiveBudget();
-            const idx = budget.transactions.findIndex(t => t.id === id);
-            if (idx !== -1) {
-                budget.transactions[idx] = { ...budget.transactions[idx], description, amount: parseFloat(amount), type };
-                saveData();
-                showToast("Mis à jour");
-                resetForm();
-            }
-        };
-
-        const deleteTransaction = (id) => {
-            getActiveBudget().transactions = getActiveBudget().transactions.filter(t => t.id !== id);
-            saveData();
-        };
-
-        const confirmUndo = () => {
-            const btn = document.getElementById('undoBtn');
-            if (!undoState) {
-                undoState = true;
-                btn.classList.add('undo-btn-active', 'bg-rose-500', 'text-white');
-                btn.querySelector('span').innerText = "Confirmer l'annulation ?";
-                setTimeout(() => { if(undoState) resetUndoBtn(); }, 3000);
-            } else {
-                performUndo();
-            }
-        };
-
-        const resetUndoBtn = () => {
-            undoState = false;
-            const btn = document.getElementById('undoBtn');
-            btn.classList.remove('undo-btn-active', 'bg-rose-500', 'text-white');
-            btn.querySelector('span').innerText = "Annuler la dernière opération";
-        };
-
-        const performUndo = () => {
-            const budget = getActiveBudget();
-            if (budget.transactions.length > 0) {
-                budget.transactions.shift();
-                saveData();
-                showToast("Dernière opération annulée");
-            }
-            resetUndoBtn();
-        };
-
-        // Graphique Logic
-        const openChartModal = () => {
-            document.getElementById('chartModal').classList.remove('hidden');
-            updateChart();
-        };
-
-        const closeChartModal = () => document.getElementById('chartModal').classList.add('hidden');
-
-        const updateChart = () => {
-            const budget = getActiveBudget();
-            const expensesOnly = budget.transactions.filter(t => t.type === 'expense');
-            
-            const grouped = {};
-            expensesOnly.forEach(t => {
-                grouped[t.description] = (grouped[t.description] || 0) + t.amount;
-            });
-
-            const labels = Object.keys(grouped);
-            const data = Object.values(grouped);
-            
-            const ctx = document.getElementById('expenseChart').getContext('2d');
-            
-            if (myChart) myChart.destroy();
-
-            const primaryColor = getComputedStyle(document.documentElement).getPropertyValue('--primary').trim();
-            
-            myChart = new Chart(ctx, {
-                type: 'doughnut',
-                data: {
-                    labels: labels,
-                    datasets: [{
-                        data: data,
-                        backgroundColor: [
-                            primaryColor,
-                            '#10b981', '#f43f5e', '#f59e0b', '#06b6d4', '#a855f7', '#ec4899', '#84cc16'
-                        ],
-                        borderWidth: 0,
-                        hoverOffset: 20
-                    }]
-                },
-                options: {
-                    responsive: true,
-                    maintainAspectRatio: false,
-                    cutout: '75%',
-                    plugins: {
-                        legend: { display: false }
-                    }
+                if (reached) {
+                    gameState.achievements.push(ach.id);
+                    showToast(ach.title, ach.desc);
+                    renderAchievements();
                 }
             });
+        }
 
-            const legend = document.getElementById('chartLegend');
-            legend.innerHTML = labels.map((label, i) => `
-                <div class="flex items-center justify-between gap-3 p-3 bg-white/5 rounded-xl border border-white/5">
-                    <div class="flex items-center gap-2 overflow-hidden">
-                        <div class="w-3 h-3 rounded-full flex-shrink-0" style="background-color: ${myChart.data.datasets[0].backgroundColor[i % 8]}"></div>
-                        <span class="text-xs font-bold text-slate-300 truncate">${label}</span>
-                    </div>
-                    <span class="text-xs font-black text-white">${grouped[label].toLocaleString()}€</span>
-                </div>
-            `).join('');
+        // --- UI & Helpers ---
+        function updateUI() {
+            document.getElementById('currency').innerText = Math.floor(gameState.currency).toLocaleString();
+            document.getElementById('power').innerText = gameState.power;
             
-            if(labels.length === 0) {
-                legend.innerHTML = `<p class="col-span-2 text-center text-slate-500 italic text-sm py-4">Aucune dépense enregistrée cette semaine</p>`;
+            // Upgrades UI
+            for (const [id, data] of Object.entries(gameState.upgrades)) {
+                const cost = Math.floor(data.baseCost * Math.pow(data.multiplier, data.lvl));
+                document.getElementById(`${id}-lvl`).innerText = data.lvl;
+                document.getElementById(`${id}-cost`).innerText = cost.toLocaleString();
             }
-        };
 
-        const switchBudget = (id) => {
-            appData.currentBudgetId = id;
-            saveData();
-            closeBudgetModal();
-            showToast(`Semaine : ${appData.budgets[id].name}`);
-        };
+            // Time UI
+            const h = Math.floor(gameState.playTimeSeconds / 3600).toString().padStart(2, '0');
+            const m = Math.floor((gameState.playTimeSeconds % 3600) / 60).toString().padStart(2, '0');
+            const s = (gameState.playTimeSeconds % 60).toString().padStart(2, '0');
+            document.getElementById('play-time').innerText = `${h}:${m}:${s}`;
+            
+            const autoIncome = (gameState.upgrades.bellows.lvl * 1) + (gameState.upgrades.spirit.lvl * 10);
+            document.getElementById('auto-rate').innerText = autoIncome + " / sec";
+        }
 
-        const toggleThemeModal = () => document.getElementById('themeModal').classList.toggle('hidden');
-        const openBudgetList = () => { renderBudgetList(); document.getElementById('budgetModal').classList.remove('hidden'); };
-        const closeBudgetModal = () => document.getElementById('budgetModal').classList.add('hidden');
+        function renderAchievements() {
+            const list = document.getElementById('achievements-list');
+            list.innerHTML = '';
+            achievementsDef.forEach(ach => {
+                const unlocked = gameState.achievements.includes(ach.id);
+                const div = document.createElement('div');
+                div.className = `p-3 rounded border transition-all ${unlocked ? 'bg-indigo-900/20 border-indigo-500/50 opacity-100' : 'bg-gray-900/40 border-gray-800 opacity-40'}`;
+                div.innerHTML = `
+                    <div class="flex justify-between items-center">
+                        <span class="font-bold text-sm ${unlocked ? 'text-indigo-300' : 'text-gray-500'}">${ach.title}</span>
+                        <span>${unlocked ? '✅' : '🔒'}</span>
+                    </div>
+                    <p class="text-[10px] text-gray-400 mt-1">${ach.desc}</p>
+                `;
+                list.appendChild(div);
+            });
+        }
 
-        const form = document.getElementById('transactionForm');
-        form.addEventListener('submit', (e) => {
-            e.preventDefault();
-            const id = document.getElementById('editId').value;
-            const selectValue = document.getElementById('presetSelect').value;
-            const otherValue = document.getElementById('otherDescription').value;
-            if (!selectValue) return showToast("Choisir une désignation");
-            const desc = selectValue === 'Autre' ? otherValue : selectValue;
-            const amt = document.getElementById('amount').value;
-            const type = document.getElementById('type').value;
-            id ? updateTransaction(id, desc, amt, type) : addTransaction(desc, amt, type);
-            if (!id) resetForm();
-        });
+        function showToast(title, desc) {
+            const toast = document.getElementById('toast');
+            document.getElementById('toast-desc').innerText = desc;
+            toast.classList.add('show');
+            setTimeout(() => toast.classList.remove('show'), 5000);
+        }
 
-        const startEdit = (id) => {
-            const t = getActiveBudget().transactions.find(x => x.id === id);
-            document.getElementById('editId').value = t.id;
-            const select = document.getElementById('presetSelect');
-            const otherInput = document.getElementById('otherDescription');
-            const standardOptions = Array.from(select.options).map(o => o.value);
-            if (standardOptions.includes(t.description) && t.description !== 'Autre') {
-                select.value = t.description;
-                otherInput.classList.add('hidden');
-            } else {
-                select.value = 'Autre';
-                otherInput.value = t.description;
-                otherInput.classList.remove('hidden');
+        // --- Persistence ---
+        function autoSave() {
+            localStorage.setItem('etherealForge_save', JSON.stringify(gameState));
+            console.log('Jeu sauvegardé.');
+        }
+
+        function loadGame() {
+            const saved = localStorage.getItem('etherealForge_save');
+            if (saved) {
+                const parsed = JSON.parse(saved);
+                // Fusion pour éviter de casser le jeu lors des mises à jour
+                gameState = { ...gameState, ...parsed };
+                gameState.startTime = Date.now(); // Reset session timer but keep playTimeSeconds
             }
-            document.getElementById('amount').value = t.amount;
-            document.getElementById('type').value = t.type;
-            document.getElementById('formTitle').innerText = "Modification";
-            document.getElementById('submitBtn').innerHTML = `<i data-lucide="refresh-cw" class="w-5 h-5"></i> Modifier`;
-            document.getElementById('cancelEdit').classList.remove('hidden');
-            window.scrollTo({ top: 0, behavior: 'smooth' });
-            lucide.createIcons();
-        };
+        }
 
-        const resetForm = () => {
-            form.reset();
-            document.getElementById('editId').value = "";
-            document.getElementById('formTitle').innerText = "Nouvelle entrée";
-            document.getElementById('submitBtn').innerHTML = `<i data-lucide="check" class="w-5 h-5"></i> Enregistrer`;
-            document.getElementById('cancelEdit').classList.add('hidden');
-            document.getElementById('otherDescription').classList.add('hidden');
-            lucide.createIcons();
-        };
-
-        const showToast = (msg) => {
-            const t = document.getElementById('toast');
-            document.getElementById('toastMsg').innerText = msg;
-            t.classList.remove('translate-y-32', 'opacity-0');
-            setTimeout(() => t.classList.add('translate-y-32', 'opacity-0'), 3000);
-        };
-
-        const render = () => {
-            const budget = getActiveBudget();
-            if (!budget) return;
-            document.getElementById('currentBudgetName').innerText = budget.name;
-            document.getElementById('carriedOverDisplay').innerText = (budget.carriedOver || 0).toLocaleString('fr-FR', { style: 'currency', currency: 'EUR' });
-            let inc = 0, exp = 0;
-            budget.transactions.forEach(t => t.type === 'income' ? inc += t.amount : exp += t.amount);
-            document.getElementById('totalIncome').innerText = inc.toLocaleString('fr-FR', { style: 'currency', currency: 'EUR' });
-            document.getElementById('totalExpenses').innerText = exp.toLocaleString('fr-FR', { style: 'currency', currency: 'EUR' });
-            const balance = (budget.carriedOver || 0) + inc - exp;
-            const balanceEl = document.getElementById('netBalance');
-            balanceEl.innerText = balance.toLocaleString('fr-FR', { style: 'currency', currency: 'EUR' });
-            balanceEl.className = `text-3xl font-black ${balance < 0 ? 'text-rose-400' : 'text-white'}`;
-            document.getElementById('transCount').innerText = budget.transactions.length;
-            const undoContainer = document.getElementById('undoContainer');
-            budget.transactions.length > 0 ? undoContainer.classList.remove('opacity-0', 'pointer-events-none') : undoContainer.classList.add('opacity-0', 'pointer-events-none');
-            const listEl = document.getElementById('transactionList');
-            const emptyEl = document.getElementById('emptyState');
-            listEl.innerHTML = "";
-            if (budget.transactions.length === 0) { emptyEl.classList.remove('hidden'); } else {
-                emptyEl.classList.add('hidden');
-                budget.transactions.forEach(t => {
-                    const div = document.createElement('div');
-                    div.className = "glass-card p-5 rounded-2xl flex items-center justify-between group animate-in slide-in-from-bottom-2 fade-in";
-                    div.innerHTML = `
-                        <div class="flex items-center gap-4">
-                            <div class="w-10 h-10 rounded-xl flex items-center justify-center ${t.type === 'income' ? 'bg-emerald-500/10 text-emerald-400' : 'bg-rose-500/10 text-rose-400'} border border-white/5">
-                                <i data-lucide="${t.type === 'income' ? 'trending-up' : 'trending-down'}" class="w-5 h-5"></i>
-                            </div>
-                            <div>
-                                <h4 class="font-bold text-white text-base">${t.description}</h4>
-                                <p class="text-[10px] font-bold text-slate-500 uppercase tracking-widest">${t.date}</p>
-                            </div>
-                        </div>
-                        <div class="flex items-center gap-4">
-                            <span class="text-lg font-black ${t.type === 'income' ? 'text-emerald-400' : 'text-rose-400'}">
-                                ${t.type === 'income' ? '+' : '-'}${t.amount.toLocaleString('fr-FR')} €
-                            </span>
-                            <div class="flex items-center gap-1 opacity-0 group-hover:opacity-100 transition-all">
-                                <button onclick="startEdit('${t.id}')" class="p-1.5 text-slate-500 hover:text-white transition-colors"><i data-lucide="edit-2" class="w-4 h-4"></i></button>
-                                <button onclick="deleteTransaction('${t.id}')" class="p-1.5 text-slate-500 hover:text-rose-400 transition-colors"><i data-lucide="trash" class="w-4 h-4"></i></button>
-                            </div>
-                        </div>`;
-                    listEl.appendChild(div);
-                });
-            }
-            lucide.createIcons();
-        };
-
-        const renderBudgetList = () => {
-            const container = document.getElementById('budgetListItems');
-            const sortedIds = Object.keys(appData.budgets).sort((a, b) => b.localeCompare(a));
-            container.innerHTML = sortedIds.map(id => {
-                const b = appData.budgets[id];
-                const active = id === appData.currentBudgetId;
-                return `
-                    <div class="flex items-center justify-between p-4 rounded-2xl cursor-pointer border-2 transition-all ${active ? 'border-primary bg-primary/10' : 'border-white/5 bg-white/5 hover:bg-white/10'}" onclick="switchBudget('${id}')">
-                        <div class="flex items-center gap-4">
-                            <div class="w-10 h-10 flex items-center justify-center rounded-lg ${active ? 'bg-primary text-white' : 'bg-slate-800 text-slate-500'}">
-                                <i data-lucide="calendar" class="w-5 h-5"></i>
-                            </div>
-                            <div><span class="font-bold block ${active ? 'text-white' : 'text-slate-300'}">${b.name}</span>
-                                <span class="text-[10px] text-slate-500 font-bold uppercase">Solde : ${calculateFinalBalance(id).toLocaleString('fr-FR')} €</span>
-                            </div>
-                        </div>
-                        ${active ? `<i data-lucide="check-circle" class="text-primary w-5 h-5"></i>` : ''}
-                    </div>`;
-            }).join('');
-            lucide.createIcons();
-        };
-
-        window.onload = loadData;
+        window.onload = init;
     </script>
 </body>
 </html>
+
