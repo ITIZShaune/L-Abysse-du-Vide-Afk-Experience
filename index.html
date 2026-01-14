@@ -19,13 +19,23 @@
         .glow-text { text-shadow: 0 0 20px rgba(255, 255, 255, 0.2); }
         .abyss-gradient { background: radial-gradient(circle at center, #111 0%, #050505 100%); }
 
-        /* Particules en fond */
-        #bg-canvas {
+        /* Styles pour les contrôles audio */
+        .audio-bar {
             position: fixed;
-            top: 0; left: 0;
-            z-index: -1;
-            pointer-events: none;
+            top: 20px;
+            right: 20px;
+            z-index: 100;
+            background: rgba(255, 255, 255, 0.03);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            padding: 12px;
+            border-radius: 16px;
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
         }
+        
+        input[type=range] { accent-color: #4f46e5; cursor: pointer; }
 
         .easter-egg {
             position: fixed;
@@ -59,72 +69,40 @@
             animation: slide-in 0.6s cubic-bezier(0.16, 1, 0.3, 1);
         }
 
-        .exp-container {
-            width: 100%;
-            height: 6px;
-            background: rgba(255, 255, 255, 0.05);
-            border-radius: 10px;
-            overflow: hidden;
-        }
-        .exp-fill {
-            height: 100%;
-            background: linear-gradient(90deg, #4f46e5, #818cf8);
-            width: 0%;
-            transition: width 0.4s cubic-bezier(0.1, 0.7, 0.1, 1);
-            box-shadow: 0 0 10px rgba(79, 70, 229, 0.5);
-        }
+        .success-toast::before { content: ''; position: absolute; top: 0; left: 0; width: 4px; height: 100%; background: #4f46e5; }
+        
+        .exp-container { width: 100%; height: 6px; background: rgba(255, 255, 255, 0.05); border-radius: 10px; overflow: hidden; }
+        .exp-fill { height: 100%; background: linear-gradient(90deg, #4f46e5, #818cf8); width: 0%; transition: width 0.4s cubic-bezier(0.1, 0.7, 0.1, 1); box-shadow: 0 0 10px rgba(79, 70, 229, 0.5); }
+
+        @keyframes slide-in { from { transform: translateX(120%); opacity: 0; } to { transform: translateX(0); opacity: 1; } }
+        @keyframes slide-out { from { transform: translateX(0); opacity: 1; } to { transform: translateX(120%); opacity: 0; } }
 
         .custom-scrollbar::-webkit-scrollbar { width: 4px; }
         .custom-scrollbar::-webkit-scrollbar-thumb { background: rgba(255, 255, 255, 0.2); border-radius: 10px; }
-
-        /* Contrôles Audio */
-        .audio-controls {
-            position: fixed;
-            top: 20px;
-            right: 20px;
-            z-index: 100;
-            display: flex;
-            flex-direction: column;
-            gap: 10px;
-            background: rgba(255, 255, 255, 0.03);
-            padding: 15px;
-            border-radius: 15px;
-            border: 1px solid rgba(255,255,255,0.1);
-            backdrop-blur: 5px;
-        }
-
-        input[type=range] {
-            accent-color: #4f46e5;
-            background: rgba(255,255,255,0.1);
-            height: 4px;
-            border-radius: 2px;
-        }
     </style>
 </head>
 <body class="abyss-gradient min-h-screen flex flex-col items-center justify-center p-4">
 
-    <canvas id="bg-canvas"></canvas>
-
-    <div class="audio-controls">
-        <div class="flex items-center justify-between gap-4">
-            <span class="text-[10px] uppercase tracking-widest text-gray-400">Ambiance</span>
-            <button onclick="toggleMusic()" id="music-toggle" class="text-[10px] uppercase tracking-widest bg-white/5 border border-white/20 px-3 py-1 rounded-full hover:bg-white/10 transition">
-                Désactivée
-            </button>
+    <div class="audio-bar">
+        <div class="flex items-center justify-between gap-6">
+            <span class="text-[10px] uppercase tracking-widest text-gray-400 font-bold">Ambiance</span>
+            <button onclick="toggleMusic()" id="music-toggle" class="text-[10px] uppercase tracking-widest border border-white/20 px-3 py-1 rounded-full hover:bg-white/10 transition">OFF</button>
         </div>
-        <div class="flex items-center gap-3">
-            <svg class="w-3 h-3 text-gray-500" fill="currentColor" viewBox="0 0 24 24"><path d="M5 17h-5v-10h5v10zm2-10v10l9 5v-20l-9 5zm11.008 2.093c.742.743 1.2 1.77 1.2 2.907s-.458 2.164-1.2 2.908l1.414 1.414c1.114-1.115 1.794-2.656 1.794-4.322s-.68-3.207-1.794-4.322l-1.414 1.415z"/></svg>
-            <input type="range" id="volume-slider" min="0" max="1" step="0.01" value="0.3" oninput="updateVolume(this.value)">
+        <div class="flex items-center gap-2">
+            <span class="text-[10px] text-gray-500">VOL</span>
+            <input type="range" id="volume-control" min="0" max="1" step="0.05" value="0.3" oninput="updateMusicVolume(this.value)">
         </div>
-        <button onclick="toggleSound()" id="sound-toggle" class="text-[10px] uppercase tracking-widest text-gray-500 hover:text-white transition text-left">
-            Sfx : Activés
-        </button>
     </div>
 
     <div id="app" class="max-w-4xl w-full flex flex-col items-center gap-10">
         <header class="text-center space-y-2">
             <h1 class="text-5xl font-light tracking-tighter glow-text">L'ABYSSE DU VIDE</h1>
             <p class="text-gray-500 italic">"Le temps est la seule ressource que vous ne pouvez pas acheter."</p>
+            <div class="pt-2">
+                <button onclick="toggleSound()" id="sound-toggle" class="text-[10px] uppercase tracking-widest border border-white/20 px-3 py-1 rounded-full hover:bg-white/5 transition">
+                    Sons : Activés
+                </button>
+            </div>
         </header>
 
         <div class="w-full max-w-md space-y-3">
@@ -155,8 +133,8 @@
                 <p class="text-xs text-gray-400 uppercase">Easter Eggs Trouvés</p>
                 <p id="stat-eggs" class="text-2xl font-semibold mono">0 / 25</p>
             </div>
-            <div class="bg-white/5 border border-white/10 p-4 rounded-xl text-center flex flex-col items-center justify-center">
-                <div class="flex items-center gap-2 text-green-500">
+            <div class="bg-white/5 border border-white/10 p-4 rounded-xl text-center flex flex-col items-center justify-center text-green-500">
+                <div class="flex items-center gap-2">
                     <div class="w-2 h-2 bg-current rounded-full animate-pulse"></div>
                     <p class="text-xs uppercase">Connecté</p>
                 </div>
@@ -169,8 +147,8 @@
 
         <div class="w-full">
             <div class="flex justify-center gap-4 mb-6">
-                <button id="btn-achievements" onclick="switchTab('achievements')" class="flex items-center gap-2 px-6 py-2 rounded-full border border-white/10 bg-white/10 transition">Succès</button>
-                <button id="btn-eggs" onclick="switchTab('eggs')" class="flex items-center gap-2 px-6 py-2 rounded-full border border-white/10 hover:bg-white/5 transition">Collection</button>
+                <button id="btn-achievements" onclick="switchTab('achievements')" class="px-6 py-2 rounded-full border border-white/10 bg-white/10 transition">Succès</button>
+                <button id="btn-eggs" onclick="switchTab('eggs')" class="px-6 py-2 rounded-full border border-white/10 hover:bg-white/5 transition">Collection</button>
             </div>
             <div id="tab-achievements" class="grid grid-cols-1 sm:grid-cols-2 gap-3 max-h-64 overflow-y-auto pr-2 custom-scrollbar"></div>
             <div id="tab-eggs" class="hidden grid grid-cols-1 sm:grid-cols-2 gap-3 max-h-64 overflow-y-auto pr-2 custom-scrollbar"></div>
@@ -181,104 +159,66 @@
     <div id="visual-effects"></div>
 
     <script>
-        // --- SYSTÈME DE PARTICULES ---
-        const canvas = document.getElementById('bg-canvas');
-        const ctx = canvas.getContext('2d');
-        let particles = [];
-        function resize() { canvas.width = window.innerWidth; canvas.height = window.innerHeight; }
-        window.onresize = resize; resize();
+        // --- DONNÉES ---
+        const EASTER_EGGS = [
+            { id: 1, name: "Une ombre passe...", chance: 1, color: "#9ca3af" },
+            { id: 25, name: "L'Alpha et l'Oméga", chance: 0.0001, color: "#f8fafc" }
+        ];
 
-        class Particle {
-            constructor() { this.reset(); }
-            reset() {
-                this.x = Math.random() * canvas.width;
-                this.y = Math.random() * canvas.height;
-                this.size = Math.random() * 2;
-                this.speedX = (Math.random() - 0.5) * 0.2;
-                this.speedY = (Math.random() - 0.5) * 0.2;
-                this.alpha = Math.random() * 0.5;
-            }
-            update() {
-                this.x += this.speedX; this.y += this.speedY;
-                if(this.x<0 || this.x>canvas.width || this.y<0 || this.y>canvas.height) this.reset();
-            }
-            draw() {
-                ctx.fillStyle = `rgba(255,255,255,${this.alpha})`;
-                ctx.beginPath(); ctx.arc(this.x, this.y, this.size, 0, Math.PI*2); ctx.fill();
-            }
-        }
-        for(let i=0; i<100; i++) particles.push(new Particle());
-        function anim() {
-            ctx.clearRect(0,0,canvas.width, canvas.height);
-            particles.forEach(p => { p.update(); p.draw(); });
-            requestAnimationFrame(anim);
-        }
-        anim();
+        const ACHIEVEMENTS = [
+            { id: 't_1m', name: "Nouveau-né", desc: "Exister 1 minute", req: (s) => s >= 60, chance: "100%" },
+            { id: 'l_10', name: "Entité Stable", desc: "Atteindre le niveau 10", req: (s, e, l) => l >= 10, chance: "Niveau" }
+        ];
 
-        // --- MOTEUR AUDIO (AMBIANCE + SFX) ---
+        let gameState = { secondsPassed: 0, foundEggs: [], achievements: [], soundEnabled: true, level: 1, currentExp: 0 };
         let audioCtx = null;
-        let mainGain = null;
+        let musicNodes = [];
         let musicActive = false;
-        let oscillators = [];
+        let mainGainNode = null;
 
+        // --- MOTEUR AUDIO (AMBANCE) ---
         function initAudio() {
             if (!audioCtx) {
                 audioCtx = new (window.AudioContext || window.webkitAudioContext)();
-                mainGain = audioCtx.createGain();
-                mainGain.connect(audioCtx.destination);
-                mainGain.gain.setValueAtTime(0.3, audioCtx.currentTime);
+                mainGainNode = audioCtx.createGain();
+                mainGainNode.connect(audioCtx.destination);
+                mainGainNode.gain.setValueAtTime(0.3, audioCtx.currentTime);
             }
-        }
-
-        function createAmbientLayer(freq, type, vol) {
-            const osc = audioCtx.createOscillator();
-            const g = audioCtx.createGain();
-            const lfo = audioCtx.createOscillator();
-            const lfoG = audioCtx.createGain();
-
-            osc.type = type;
-            osc.frequency.setValueAtTime(freq, audioCtx.currentTime);
-            
-            g.gain.setValueAtTime(0, audioCtx.currentTime);
-            g.gain.linearRampToValueAtTime(vol, audioCtx.currentTime + 2);
-
-            lfo.frequency.setValueAtTime(Math.random() * 0.1, audioCtx.currentTime);
-            lfoG.gain.setValueAtTime(5, audioCtx.currentTime);
-
-            lfo.connect(lfoG);
-            lfoG.connect(osc.frequency);
-            osc.connect(g);
-            g.connect(mainGain);
-
-            osc.start();
-            lfo.start();
-            return { osc, g, lfo };
         }
 
         function toggleMusic() {
             initAudio();
             if (!musicActive) {
-                // Création d'une nappe sonore (Pad)
-                oscillators.push(createAmbientLayer(55, 'sine', 0.1)); // Basse A1
-                oscillators.push(createAmbientLayer(110, 'triangle', 0.05)); // A2
-                oscillators.push(createAmbientLayer(164.81, 'sine', 0.03)); // E3
+                const freqs = [55, 82.41, 110]; // A1, E2, A2 (Accords de base)
+                freqs.forEach(f => {
+                    const osc = audioCtx.createOscillator();
+                    const g = audioCtx.createGain();
+                    osc.type = 'sine';
+                    osc.frequency.value = f;
+                    g.gain.setValueAtTime(0, audioCtx.currentTime);
+                    g.gain.linearRampToValueAtTime(0.1, audioCtx.currentTime + 2);
+                    osc.connect(g);
+                    g.connect(mainGainNode);
+                    osc.start();
+                    musicNodes.push({ osc, g });
+                });
                 musicActive = true;
-                document.getElementById('music-toggle').textContent = "Activée";
+                document.getElementById('music-toggle').textContent = "ON";
                 document.getElementById('music-toggle').classList.add('bg-indigo-500/20');
             } else {
-                oscillators.forEach(o => {
-                    o.g.gain.linearRampToValueAtTime(0, audioCtx.currentTime + 1);
-                    setTimeout(() => { o.osc.stop(); o.lfo.stop(); }, 1000);
+                musicNodes.forEach(n => {
+                    n.g.gain.linearRampToValueAtTime(0, audioCtx.currentTime + 1);
+                    setTimeout(() => n.osc.stop(), 1000);
                 });
-                oscillators = [];
+                musicNodes = [];
                 musicActive = false;
-                document.getElementById('music-toggle').textContent = "Désactivée";
+                document.getElementById('music-toggle').textContent = "OFF";
                 document.getElementById('music-toggle').classList.remove('bg-indigo-500/20');
             }
         }
 
-        function updateVolume(val) {
-            if (mainGain) mainGain.gain.setTargetAtTime(val, audioCtx.currentTime, 0.1);
+        function updateMusicVolume(val) {
+            if (mainGainNode) mainGainNode.gain.setTargetAtTime(val, audioCtx.currentTime, 0.1);
         }
 
         function playDiscoverySound(rarity) {
@@ -289,45 +229,23 @@
             osc.connect(g); g.connect(audioCtx.destination);
             osc.frequency.setValueAtTime(220 + (1/rarity), audioCtx.currentTime);
             g.gain.setValueAtTime(0.1, audioCtx.currentTime);
-            g.gain.exponentialRampToValueAtTime(0.0001, audioCtx.currentTime + 1);
-            osc.start(); osc.stop(audioCtx.currentTime + 1);
+            g.gain.exponentialRampToValueAtTime(0.0001, audioCtx.currentTime + 1.5);
+            osc.start(); osc.stop(audioCtx.currentTime + 1.5);
         }
-
-        // --- LOGIQUE DU JEU (Reprise de votre code original) ---
-        const EASTER_EGGS = [
-            { id: 1, name: "Une ombre passe...", chance: 1, color: "#9ca3af" },
-            { id: 2, name: "Un murmure lointain", chance: 0.5, color: "#d1d5db" },
-            { id: 3, name: "Flash de lumière", chance: 0.3, color: "#ffffff" },
-            { id: 4, name: "Écho du temps", chance: 0.2, color: "#93c5fd" },
-            { id: 5, name: "Poussière d'étoile", chance: 0.15, color: "#fef08a" },
-            { id: 21, name: "La Réponse (42)", chance: 0.001, color: "#818cf8" },
-            { id: 25, name: "L'Alpha et l'Oméga", chance: 0.0001, color: "#f8fafc" }
-        ];
-
-        const ACHIEVEMENTS = [
-            { id: 't_1m', name: "Nouveau-né", desc: "Exister 1 minute", req: (s) => s >= 60, chance: "100%" },
-            { id: 'l_5', name: "Apprenti du Vide", desc: "Atteindre le niveau 5", req: (s, e, l) => l >= 5, chance: "Niveau" }
-        ];
-
-        let gameState = {
-            secondsPassed: 0,
-            foundEggs: [],
-            achievements: [],
-            soundEnabled: true,
-            level: 1,
-            currentExp: 0
-        };
 
         function toggleSound() {
             gameState.soundEnabled = !gameState.soundEnabled;
-            document.getElementById('sound-toggle').textContent = `Sfx : ${gameState.soundEnabled ? 'Activés' : 'Désactivés'}`;
+            document.getElementById('sound-toggle').textContent = `Sons : ${gameState.soundEnabled ? 'Activés' : 'Désactivés'}`;
         }
 
-        function addExp(amount) {
-            gameState.currentExp += amount;
-            let nextReq = Math.floor(100 * Math.pow(1.2, gameState.level - 1));
-            if (gameState.currentExp >= nextReq) {
-                gameState.currentExp -= nextReq;
+        // --- LOGIQUE JEU ---
+        function getExpRequired(l) { return Math.floor(100 * Math.pow(1.2, l - 1)); }
+
+        function addExp(amt) {
+            gameState.currentExp += amt;
+            let req = getExpRequired(gameState.level);
+            if (gameState.currentExp >= req) {
+                gameState.currentExp -= req;
                 gameState.level++;
                 onLevelUp();
             }
@@ -340,7 +258,7 @@
         }
 
         function updateExpUI() {
-            const req = Math.floor(100 * Math.pow(1.2, gameState.level - 1));
+            const req = getExpRequired(gameState.level);
             document.getElementById('level-display').textContent = gameState.level;
             document.getElementById('exp-current').textContent = Math.floor(gameState.currentExp);
             document.getElementById('exp-next').textContent = req;
@@ -350,13 +268,10 @@
         function notify(title, name, color) {
             const toast = document.createElement('div');
             toast.className = 'success-toast';
-            toast.style.borderLeft = `4px solid ${color}`;
-            toast.innerHTML = `<p class="text-[10px] uppercase text-gray-500 font-bold">${title}</p><p class="text-lg font-bold text-white">${name}</p>`;
+            toast.style.borderLeftColor = color;
+            toast.innerHTML = `<div class="flex flex-col"><span class="text-[10px] uppercase text-gray-500 font-bold">${title}</span><span class="text-lg font-bold">${name}</span></div>`;
             document.getElementById('notifications-container').appendChild(toast);
-            setTimeout(() => {
-                toast.style.animation = 'fade-out 0.5s forwards';
-                setTimeout(() => toast.remove(), 500);
-            }, 3000);
+            setTimeout(() => { toast.style.animation = 'slide-out 0.5s forwards'; setTimeout(() => toast.remove(), 500); }, 3000);
         }
 
         function updateUI() {
@@ -367,54 +282,28 @@
             document.getElementById('stat-eggs').textContent = `${gameState.foundEggs.length} / ${EASTER_EGGS.length}`;
         }
 
-        function checkEasterEggs() {
-            EASTER_EGGS.forEach(egg => {
-                if (!gameState.foundEggs.includes(egg.id) && Math.random()*100 < egg.chance) {
-                    gameState.foundEggs.push(egg.id);
-                    addExp(50);
-                    notify('Easter Egg Trouvé', egg.name, egg.color);
-                    playDiscoverySound(egg.chance);
-                    renderEggs();
-                }
-            });
-        }
-
-        function renderAchievements() {
-            document.getElementById('tab-achievements').innerHTML = ACHIEVEMENTS.map(ach => `
-                <div class="p-3 rounded-lg border border-white/5 bg-white/5">
-                    <p class="font-bold text-white">${ach.name}</p>
-                    <p class="text-xs text-gray-400">${ach.desc}</p>
-                </div>
-            `).join('');
-        }
-
-        function renderEggs() {
-            document.getElementById('tab-eggs').innerHTML = EASTER_EGGS.map(egg => {
-                const found = gameState.foundEggs.includes(egg.id);
-                return `<div class="p-3 rounded-lg border border-white/5 bg-white/5 ${found ? '' : 'opacity-40'}">
-                    <p class="text-sm font-medium" style="color: ${found ? egg.color : '#444'}">${found ? egg.name : '?? ?????'}</p>
-                </div>`;
-            }).join('');
-        }
-
-        window.switchTab = (tab) => {
-            document.getElementById('tab-achievements').classList.toggle('hidden', tab !== 'achievements');
-            document.getElementById('tab-eggs').classList.toggle('hidden', tab !== 'eggs');
-        };
-
-        // Init
         setInterval(() => {
             gameState.secondsPassed++;
             addExp(1);
             updateUI();
-            if(gameState.secondsPassed % 5 === 0) checkEasterEggs();
+            if (gameState.secondsPassed % 5 === 0) {
+                EASTER_EGGS.forEach(egg => {
+                    if (!gameState.foundEggs.includes(egg.id) && Math.random()*100 < egg.chance) {
+                        gameState.foundEggs.push(egg.id);
+                        addExp(50);
+                        notify('Easter Egg', egg.name, egg.color);
+                        playDiscoverySound(egg.chance);
+                    }
+                });
+            }
         }, 1000);
 
-        window.onload = () => {
-            renderAchievements();
-            renderEggs();
-            updateExpUI();
-        };
+        function switchTab(t) {
+            document.getElementById('tab-achievements').classList.toggle('hidden', t !== 'achievements');
+            document.getElementById('tab-eggs').classList.toggle('hidden', t !== 'eggs');
+        }
+
+        window.onload = () => { updateExpUI(); updateUI(); };
     </script>
 </body>
 </html>
