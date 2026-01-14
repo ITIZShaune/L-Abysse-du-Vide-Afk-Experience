@@ -181,8 +181,14 @@
         <!-- Onglets -->
         <div class="w-full">
             <div class="flex justify-center gap-4 mb-6">
-                <button id="btn-achievements" onclick="switchTab('achievements')" class="px-6 py-2 rounded-full border border-white/10 bg-white/10 transition">Succès</button>
-                <button id="btn-eggs" onclick="switchTab('eggs')" class="px-6 py-2 rounded-full border border-white/10 hover:bg-white/5 transition">Collection</button>
+                <button id="btn-achievements" onclick="switchTab('achievements')" class="flex items-center gap-2 px-6 py-2 rounded-full border border-white/10 bg-white/10 transition group">
+                    <svg class="w-4 h-4 text-indigo-400" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9H4.5a2.5 2.5 0 0 1 0-5H6"></path><path d="M18 9h1.5a2.5 2.5 0 0 0 0-5H18"></path><path d="M4 22h16"></path><path d="M10 14.66V17c0 .55.47.98.97 1.21C11.47 18.44 12 19 12 19s.53-.56 1.03-.79c.5-.23.97-.66.97-1.21v-2.34"></path><path d="M12 2v12"></path><path d="M7 2h10"></path></svg>
+                    <span>Succès</span>
+                </button>
+                <button id="btn-eggs" onclick="switchTab('eggs')" class="flex items-center gap-2 px-6 py-2 rounded-full border border-white/10 hover:bg-white/5 transition group">
+                    <svg class="w-4 h-4 text-gray-400 group-hover:text-white transition-colors" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"></path><path d="M2 12h20"></path></svg>
+                    <span>Collection</span>
+                </button>
             </div>
 
             <div id="tab-achievements" class="grid grid-cols-1 sm:grid-cols-2 gap-3 max-h-64 overflow-y-auto pr-2 custom-scrollbar"></div>
@@ -528,10 +534,21 @@
         }
 
         window.switchTab = (tab) => {
+            const btnAch = document.getElementById('btn-achievements');
+            const btnEgg = document.getElementById('btn-eggs');
+            
             document.getElementById('tab-achievements').classList.toggle('hidden', tab !== 'achievements');
             document.getElementById('tab-eggs').classList.toggle('hidden', tab !== 'eggs');
-            document.getElementById('btn-achievements').classList.toggle('bg-white/10', tab === 'achievements');
-            document.getElementById('btn-eggs').classList.toggle('bg-white/10', tab === 'eggs');
+            
+            // Update Achievement Button
+            btnAch.classList.toggle('bg-white/10', tab === 'achievements');
+            btnAch.querySelector('svg').classList.toggle('text-indigo-400', tab === 'achievements');
+            btnAch.querySelector('svg').classList.toggle('text-gray-400', tab !== 'achievements');
+            
+            // Update Egg Button
+            btnEgg.classList.toggle('bg-white/10', tab === 'eggs');
+            btnEgg.querySelector('svg').classList.toggle('text-white', tab === 'eggs');
+            btnEgg.querySelector('svg').classList.toggle('text-gray-400', tab !== 'eggs');
         };
 
         window.onload = init;
