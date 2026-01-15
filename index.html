@@ -2,7 +2,7 @@
 <html lang="fr">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>L'Abysse du Vide</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <style>
@@ -19,7 +19,8 @@
             font-family: 'Plus Jakarta Sans', sans-serif;
             overflow: hidden;
             margin: 0;
-            height: 100vh;
+            height: 100dvh; /* Dynamic viewport height for mobile browsers */
+            width: 100vw;
         }
 
         /* --- BACKGROUND LOGIC --- */
@@ -114,38 +115,46 @@
 
         .success-toast {
             position: fixed;
-            bottom: 2rem;
-            right: 2rem;
+            bottom: 1.5rem;
+            right: 1.5rem;
             z-index: 100;
+            max-width: calc(100vw - 3rem);
             animation: slide-in 0.5s cubic-bezier(0.16, 1, 0.3, 1);
         }
         @keyframes slide-in {
             from { transform: translateX(100%); opacity: 0; }
             to { transform: translateX(0); opacity: 1; }
         }
+
+        /* Responsive scaling for different screen heights */
+        @media (max-height: 700px) {
+            #app { gap: 1.5rem !important; }
+            #timer-container { width: 12rem !important; height: 12rem !important; }
+            header h1 { font-size: 1.875rem !important; }
+        }
     </style>
 </head>
-<body class="flex items-center justify-center">
+<body class="flex items-center justify-center overflow-hidden">
 
     <canvas id="bg-canvas"></canvas>
     <div class="nebula"></div>
 
     <!-- Interface Principale -->
-    <div id="app" class="relative z-10 w-full max-w-4xl h-full flex flex-col items-center justify-center gap-10 p-6">
+    <div id="app" class="relative z-10 w-full max-w-4xl h-full flex flex-col items-center justify-center gap-6 md:gap-10 p-4 md:p-6 overflow-y-auto lg:overflow-hidden">
         
-        <header class="text-center space-y-3">
-            <h1 class="text-4xl md:text-6xl font-extralight tracking-[0.2em] text-white opacity-90 uppercase">L'Abysse du Vide</h1>
-            <p class="text-indigo-300/50 text-xs tracking-widest uppercase mono">Laisse le temps s'écouler dans le néant</p>
+        <header class="text-center space-y-2 md:space-y-3">
+            <h1 class="text-3xl md:text-6xl font-extralight tracking-[0.2em] text-white opacity-90 uppercase">L'Abysse du Vide</h1>
+            <p class="text-indigo-300/50 text-[10px] md:text-xs tracking-widest uppercase mono">Laisse le temps s'écouler dans le néant</p>
         </header>
 
         <!-- Niveau & Progrès -->
-        <div class="w-full max-w-md space-y-4">
+        <div class="w-full max-w-xs md:max-w-md space-y-3 md:space-y-4">
             <div class="flex justify-between items-end px-1">
                 <div class="flex flex-col">
-                    <span class="text-[10px] uppercase tracking-[0.2em] text-indigo-400/60 font-bold">Niveau</span>
-                    <span id="level-display" class="text-4xl font-bold mono tracking-tighter">1</span>
+                    <span class="text-[9px] md:text-[10px] uppercase tracking-[0.2em] text-indigo-400/60 font-bold">Niveau</span>
+                    <span id="level-display" class="text-2xl md:text-4xl font-bold mono tracking-tighter">1</span>
                 </div>
-                <div class="text-[11px] uppercase tracking-widest text-white/40 mono pb-1">
+                <div class="text-[9px] md:text-[11px] uppercase tracking-widest text-white/40 mono pb-1">
                     <span id="exp-current" class="text-white/80">0</span> / <span id="exp-next">100</span> XP
                 </div>
             </div>
@@ -156,35 +165,35 @@
 
         <!-- Timer Central -->
         <div class="relative">
-            <div id="timer-container" class="glass-panel w-64 h-64 md:w-80 md:h-80 rounded-full flex flex-col items-center justify-center border-indigo-500/10 timer-glow">
-                <span id="main-timer" class="text-4xl md:text-5xl font-extralight mono tracking-tight text-white/90">00:00:00</span>
-                <div class="w-12 h-[1px] bg-indigo-500/30 my-4"></div>
-                <span class="text-[10px] uppercase tracking-[0.3em] text-indigo-300/40">Temps Passé</span>
+            <div id="timer-container" class="glass-panel w-48 h-48 md:w-80 md:h-80 rounded-full flex flex-col items-center justify-center border-indigo-500/10 timer-glow transition-all duration-500">
+                <span id="main-timer" class="text-3xl md:text-5xl font-extralight mono tracking-tight text-white/90">00:00:00</span>
+                <div class="w-8 md:w-12 h-[1px] bg-indigo-500/30 my-3 md:my-4"></div>
+                <span class="text-[8px] md:text-[10px] uppercase tracking-[0.3em] text-indigo-300/40">Temps Passé</span>
             </div>
         </div>
 
         <!-- Statistiques -->
-        <div class="grid grid-cols-2 md:grid-cols-3 gap-4 w-full max-w-2xl">
-            <div class="glass-panel p-4 rounded-2xl flex flex-col items-center">
-                <span class="text-[9px] text-white/40 uppercase tracking-widest mb-1">Collection</span>
-                <p id="stat-eggs" class="text-xl font-medium mono">0 / 25</p>
+        <div class="grid grid-cols-2 md:grid-cols-3 gap-3 md:gap-4 w-full max-w-2xl px-2">
+            <div class="glass-panel p-3 md:p-4 rounded-2xl flex flex-col items-center">
+                <span class="text-[8px] md:text-[9px] text-white/40 uppercase tracking-widest mb-1">Collection</span>
+                <p id="stat-eggs" class="text-base md:text-xl font-medium mono">0 / 25</p>
             </div>
-            <div class="glass-panel p-4 rounded-2xl flex flex-col items-center hidden md:flex">
-                <span class="text-[9px] text-white/40 uppercase tracking-widest mb-1">Audio</span>
-                <button onclick="toggleSound()" id="sound-toggle" class="text-xs uppercase tracking-widest text-indigo-300 hover:text-white transition-colors">On</button>
+            <div class="glass-panel p-3 md:p-4 rounded-2xl flex flex-col items-center hidden md:flex">
+                <span class="text-[8px] md:text-[9px] text-white/40 uppercase tracking-widest mb-1">Audio</span>
+                <button onclick="toggleSound()" id="sound-toggle" class="text-[10px] md:text-xs uppercase tracking-widest text-indigo-300 hover:text-white transition-colors">On</button>
             </div>
-            <div class="glass-panel p-4 rounded-2xl flex flex-col items-center">
-                <span class="text-[9px] text-white/40 uppercase tracking-widest mb-1">Dernier EasterEgg</span>
-                <p id="stat-rarity" class="text-xl font-medium mono text-indigo-300">Aucun</p>
+            <div class="glass-panel p-3 md:p-4 rounded-2xl flex flex-col items-center">
+                <span class="text-[8px] md:text-[9px] text-white/40 uppercase tracking-widest mb-1 text-center">Dernier Fragment</span>
+                <p id="stat-rarity" class="text-base md:text-xl font-medium mono text-indigo-300">Aucun</p>
             </div>
         </div>
 
         <!-- Navigation par Boutons (Modales) -->
-        <div class="flex gap-4">
-            <button onclick="openModal('achievements')" class="glass-panel px-8 py-3 rounded-full text-[10px] uppercase tracking-[0.2em] font-bold hover:bg-white/5 transition-all">
+        <div class="flex gap-3 md:gap-4 pb-4">
+            <button onclick="openModal('achievements')" class="glass-panel px-6 md:px-8 py-2 md:py-3 rounded-full text-[9px] md:text-[10px] uppercase tracking-[0.2em] font-bold hover:bg-white/5 transition-all">
                 Succès
             </button>
-            <button onclick="openModal('eggs')" class="glass-panel px-8 py-3 rounded-full text-[10px] uppercase tracking-[0.2em] font-bold hover:bg-white/5 transition-all">
+            <button onclick="openModal('eggs')" class="glass-panel px-6 md:px-8 py-2 md:py-3 rounded-full text-[9px] md:text-[10px] uppercase tracking-[0.2em] font-bold hover:bg-white/5 transition-all">
                 Collection
             </button>
         </div>
@@ -192,34 +201,40 @@
 
     <!-- Modale Succès -->
     <div id="modal-achievements" class="modal-overlay">
-        <div class="glass-panel w-full max-w-xl max-h-[80vh] m-4 rounded-3xl overflow-hidden flex flex-col">
-            <div class="p-6 border-b border-white/5 flex justify-between items-center">
-                <h2 class="text-xs uppercase tracking-[0.3em] font-bold text-indigo-300">Succès Déverrouillés</h2>
+        <div class="glass-panel w-full max-w-xl max-h-[85vh] m-4 rounded-3xl overflow-hidden flex flex-col">
+            <div class="p-5 md:p-6 border-b border-white/5 flex justify-between items-center">
+                <h2 class="text-[10px] md:text-xs uppercase tracking-[0.3em] font-bold text-indigo-300">Succès Déverrouillés</h2>
                 <button onclick="closeModal('achievements')" class="w-10 h-10 flex items-center justify-center rounded-full hover:bg-white/5 text-white/40 hover:text-white transition-all text-2xl">&times;</button>
             </div>
-            <div id="list-achievements" class="p-6 overflow-y-auto custom-scrollbar grid grid-cols-1 sm:grid-cols-2 gap-3"></div>
+            <div id="list-achievements" class="p-4 md:p-6 overflow-y-auto custom-scrollbar grid grid-cols-1 sm:grid-cols-2 gap-3"></div>
         </div>
     </div>
 
     <!-- Modale Collection -->
     <div id="modal-eggs" class="modal-overlay">
-        <div class="glass-panel w-full max-w-xl max-h-[80vh] m-4 rounded-3xl overflow-hidden flex flex-col">
-            <div class="p-6 border-b border-white/5 flex justify-between items-center">
-                <h2 class="text-xs uppercase tracking-[0.3em] font-bold text-indigo-300">Fragments du Néant</h2>
+        <div class="glass-panel w-full max-w-xl max-h-[85vh] m-4 rounded-3xl overflow-hidden flex flex-col">
+            <div class="p-5 md:p-6 border-b border-white/5 flex justify-between items-center">
+                <h2 class="text-[10px] md:text-xs uppercase tracking-[0.3em] font-bold text-indigo-300">Fragments du Néant</h2>
                 <button onclick="closeModal('eggs')" class="w-10 h-10 flex items-center justify-center rounded-full hover:bg-white/5 text-white/40 hover:text-white transition-all text-2xl">&times;</button>
             </div>
-            <div id="list-eggs" class="p-6 overflow-y-auto custom-scrollbar grid grid-cols-1 sm:grid-cols-2 gap-3"></div>
+            <div id="list-eggs" class="p-4 md:p-6 overflow-y-auto custom-scrollbar grid grid-cols-1 sm:grid-cols-2 gap-3"></div>
         </div>
     </div>
 
     <div id="notifications-container"></div>
 
     <script>
-        // --- ANIMATION FOND ---
+        // --- ANIMATION FOND ET RESPONSIVITÉ ---
         const canvas = document.getElementById('bg-canvas');
         const ctx = canvas.getContext('2d');
         let particles = [];
-        function resize() { canvas.width = window.innerWidth; canvas.height = window.innerHeight; }
+        
+        function resize() { 
+            canvas.width = window.innerWidth; 
+            canvas.height = window.innerHeight; 
+            createStars(); // Recreate stars to fill new dimensions
+        }
+
         class Star {
             constructor() { this.init(); }
             init() {
@@ -241,10 +256,22 @@
                 ctx.beginPath(); ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2); ctx.fill();
             }
         }
-        function createStars() { particles = []; for (let i = 0; i < 150; i++) particles.push(new Star()); }
-        function animate() { ctx.clearRect(0, 0, canvas.width, canvas.height); particles.forEach(p => { p.update(); p.draw(); }); requestAnimationFrame(animate); }
+
+        function createStars() { 
+            particles = []; 
+            const count = Math.floor((canvas.width * canvas.height) / 8000); // Dynamic count based on screen area
+            for (let i = 0; i < Math.min(count, 300); i++) particles.push(new Star()); 
+        }
+
+        function animate() { 
+            ctx.clearRect(0, 0, canvas.width, canvas.height); 
+            particles.forEach(p => { p.update(); p.draw(); }); 
+            requestAnimationFrame(animate); 
+        }
+
         window.addEventListener('resize', resize);
-        resize(); createStars(); animate();
+        resize(); 
+        animate();
 
         // --- DATA ---
         const EASTER_EGGS = [
@@ -276,18 +303,18 @@
         ];
 
         const ACHIEVEMENTS = [
-            { id: 't_1m', name: "Nouveau-né", desc: "Exister 1 minute", req: (s) => s >= 60, chance: "100%" },
-            { id: 't_10m', name: "Observateur", desc: "Exister 10 minutes", req: (s) => s >= 600, chance: "100%" },
-            { id: 't_1h', name: "Patient", desc: "Exister 1 heure", req: (s) => s >= 3600, chance: "100%" },
-            { id: 't_5h', name: "Anachorète", desc: "Exister 5 heures", req: (s) => s >= 18000, chance: "100%" },
-            { id: 'e_1', name: "L'éveil", desc: "Trouver votre premier fragment", req: (s, e) => e.length >= 1, chance: "Commun" },
-            { id: 'e_10', name: "Collectionneur", desc: "Trouver 10 fragments", req: (s, e) => e.length >= 10, chance: "Rare" },
-            { id: 'e_20', name: "Maître du Néant", desc: "Trouver 20 fragments", req: (s, e) => e.length >= 20, chance: "Légendaire" },
-            { id: 'e_rare', name: "L'Impossible", desc: "Trouver l'Alpha et l'Oméga", req: (s, e) => e.includes(25), chance: "Extrême" },
-            { id: 'l_5', name: "Apprenti du Vide", desc: "Atteindre le niveau 5", req: (s, e, l) => l >= 5, chance: "Niveau" },
-            { id: 'l_10', name: "Entité Stable", desc: "Atteindre le niveau 10", req: (s, e, l) => l >= 10, chance: "Niveau" },
-            { id: 'l_25', name: "Anomalie Majeure", desc: "Atteindre le niveau 25", req: (s, e, l) => l >= 25, chance: "Niveau" },
-            { id: 'l_50', name: "Souverain de l'Infini", desc: "Atteindre le niveau 50", req: (s, e, l) => l >= 50, chance: "Niveau" }
+            { id: 't_1m', name: "Nouveau-né", desc: "Exister 1 minute", req: (s) => s >= 60 },
+            { id: 't_10m', name: "Observateur", desc: "Exister 10 minutes", req: (s) => s >= 600 },
+            { id: 't_1h', name: "Patient", desc: "Exister 1 heure", req: (s) => s >= 3600 },
+            { id: 't_5h', name: "Anachorète", desc: "Exister 5 heures", req: (s) => s >= 18000 },
+            { id: 'e_1', name: "L'éveil", desc: "Trouver votre premier fragment", req: (s, e) => e.length >= 1 },
+            { id: 'e_10', name: "Collectionneur", desc: "Trouver 10 fragments", req: (s, e) => e.length >= 10 },
+            { id: 'e_20', name: "Maître du Néant", desc: "Trouver 20 fragments", req: (s, e) => e.length >= 20 },
+            { id: 'e_rare', name: "L'Impossible", desc: "Trouver l'Alpha et l'Oméga", req: (s, e) => e.includes(25) },
+            { id: 'l_5', name: "Apprenti du Vide", desc: "Atteindre le niveau 5", req: (s, e, l) => l >= 5 },
+            { id: 'l_10', name: "Entité Stable", desc: "Atteindre le niveau 10", req: (s, e, l) => l >= 10 },
+            { id: 'l_25', name: "Anomalie Majeure", desc: "Atteindre le niveau 25", req: (s, e, l) => l >= 25 },
+            { id: 'l_50', name: "Souverain de l'Infini", desc: "Atteindre le niveau 50", req: (s, e, l) => l >= 50 }
         ];
 
         let gameState = {
@@ -343,7 +370,7 @@
 
         function save() { localStorage.setItem('abysse_save_v2', JSON.stringify(gameState)); }
         function load() {
-            const saved = localStorage.getItem('abysse_save_v2') || localStorage.getItem('abysse_save');
+            const saved = localStorage.getItem('abysse_save_v2');
             if (saved) { try { gameState = { ...gameState, ...JSON.parse(saved) }; } catch(e) {} }
             updateExpUI(); updateUI(); renderLists();
         }
@@ -359,7 +386,7 @@
             if (lastEggId) {
                 const egg = EASTER_EGGS.find(e => e.id === lastEggId);
                 const el = document.getElementById('stat-rarity');
-                el.textContent = egg.chance + "%"; // Rarity Display
+                el.textContent = egg.chance + "%"; 
                 el.style.color = egg.color;
             }
         }
@@ -401,7 +428,7 @@
             document.getElementById('list-eggs').innerHTML = EASTER_EGGS.map(egg => {
                 const found = gameState.foundEggs.includes(egg.id);
                 return `
-                    <div class="glass-panel p-4 rounded-xl flex items-center justify-between transition-all ${found ? 'opacity-100 border-white/20' : 'opacity-20'}">
+                    <div class="glass-panel p-3 md:p-4 rounded-xl flex items-center justify-between transition-all ${found ? 'opacity-100 border-white/20' : 'opacity-20'}">
                         <div class="flex flex-col">
                             <span class="text-[10px] font-bold uppercase" style="color: ${found ? egg.color : 'white'}">${found ? egg.name : '??????'}</span>
                             <span class="text-[8px] mono text-white/30">${egg.chance}% Probabilité</span>
