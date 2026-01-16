@@ -95,7 +95,6 @@
         .custom-scrollbar::-webkit-scrollbar { width: 4px; }
         .custom-scrollbar::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.1); border-radius: 10px; }
 
-        /* Styles améliorés pour les succès */
         .ach-card {
             transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
             border: 1px solid rgba(255,255,255,0.05);
@@ -110,7 +109,8 @@
         
         .ach-card.locked .ach-icon {
             background: rgba(255,255,255,0.03);
-            color: rgba(255,255,255,0.15);
+            border: 1px dashed rgba(255,255,255,0.1);
+            color: transparent;
         }
 
         .ach-card.unlocked {
@@ -119,22 +119,16 @@
             box-shadow: 0 4px 20px rgba(0,0,0,0.3), inset 0 0 0 1px rgba(255,255,255,0.05);
         }
 
-        .ach-card.unlocked:hover {
-            transform: translateY(-2px) scale(1.01);
-            box-shadow: 0 8px 30px rgba(99, 102, 241, 0.2);
-            border-color: rgba(168, 85, 247, 0.4);
-        }
-
         .ach-card.unlocked .ach-icon {
-            background: linear-gradient(135deg, var(--accent-primary), var(--accent-secondary));
-            box-shadow: 0 0 15px rgba(99, 102, 241, 0.4);
-            color: white;
-            animation: pulse-glow 3s infinite;
+            background: rgba(99, 102, 241, 0.2);
+            border: 1px solid rgba(99, 102, 241, 0.5);
+            color: #818cf8;
+            box-shadow: 0 0 10px rgba(99, 102, 241, 0.2);
         }
 
         .ach-icon {
-            width: 40px; height: 40px;
-            border-radius: 10px;
+            width: 32px; height: 32px;
+            border-radius: 8px;
             display: flex;
             align-items: center;
             justify-content: center;
@@ -160,7 +154,6 @@
             color: #cbd5e1;
         }
 
-        /* Amélioration visuelle Onglet Améliorations */
         .talent-card {
             border: 1px solid rgba(255, 255, 255, 0.05);
             transition: all 0.3s ease;
@@ -186,7 +179,6 @@
             text-transform: uppercase;
         }
 
-        /* Amélioration visuelle Onglet Reliques */
         .egg-card {
             transition: all 0.3s ease;
             border: 1px solid rgba(255,255,255,0.03);
@@ -247,7 +239,7 @@
         <div class="w-full max-w-lg glass p-5 md:p-6 rounded-3xl space-y-4">
             <div class="flex justify-between items-end">
                 <div>
-                    <span class="text-[8px] md:text-[9px] uppercase tracking-[0.3em] text-slate-400">Strate</span>
+                    <span class="text-[8px] md:text-[9px] uppercase tracking-[0.3em] text-slate-400">Niveau</span>
                     <div class="flex items-baseline gap-2">
                         <span id="level-display" class="text-3xl md:text-4xl font-light mono text-white">1</span>
                     </div>
@@ -283,7 +275,6 @@
             <div id="tab-achievements" class="grid grid-cols-1 md:grid-cols-2 gap-3 max-h-[450px] overflow-y-auto pr-2 custom-scrollbar"></div>
             
             <div id="tab-talents" class="hidden grid grid-cols-1 md:grid-cols-3 gap-4">
-                <!-- Les cartes d'améliorations sont ici -->
                 <div class="glass talent-card p-5 rounded-2xl space-y-4 flex flex-col justify-between">
                     <div>
                         <h3 class="talent-title text-indigo-400 uppercase">Éternité</h3>
@@ -347,27 +338,27 @@
             { id: 't_10m', name: "Contemplateur", desc: "Exister pendant au moins 10 minutes.", req: (s) => s >= 600 },
             { id: 't_1h', name: "Patient", desc: "Exister pendant au moins 1 heure.", req: (s) => s >= 3600 },
             { id: 't_24h', name: "L'Immuable", desc: "Exister pendant 24 heures cumulées.", req: (s) => s >= 86400 },
-            { id: 'l_10', name: "Ascension", desc: "Atteindre la Strate de conscience 10.", req: (s, e, l) => l >= 10 },
-            { id: 'fast_lv', name: "Flash", desc: "Atteindre la Strate de conscience 20.", req: (s, e, l) => l >= 20 },
-            { id: 'l_50', name: "Souverain de l'Infini", desc: "Atteindre la Strate de conscience 50.", req: (s, e, l) => l >= 50 },
-            { id: 'l_100', name: "Demi-Dieu", desc: "Atteindre la Strate de conscience 100.", req: (s, e, l) => l >= 100 },
-            { id: 'l_250', name: "Entité Pure", desc: "Atteindre la Strate de conscience 250.", req: (s, e, l) => l >= 250 },
-            { id: 'e_1', name: "L'éveil", desc: "Trouver votre premier Easter Egg dans le vide.", req: (s, e) => e.length >= 1 },
+            { id: 'l_10', name: "Ascension", desc: "Atteindre le Niveau 10.", req: (s, e, l) => l >= 10 },
+            { id: 'fast_lv', name: "Flash", desc: "Atteindre le Niveau 20.", req: (s, e, l) => l >= 20 },
+            { id: 'l_50', name: "Souverain de l'Infini", desc: "Atteindre le Niveau 50.", req: (s, e, l) => l >= 50 },
+            { id: 'l_100', name: "Demi-Dieu", desc: "Atteindre le Niveau 100.", req: (s, e, l) => l >= 100 },
+            { id: 'l_250', name: "Entité Pure", desc: "Atteindre le Niveau 250.", req: (s, e, l) => l >= 250 },
+            { id: 'e_1', name: "L'éveil", desc: "Trouver votre première relique.", req: (s, e) => e.length >= 1 },
             { id: 'e_5', name: "Collectionneur", desc: "Trouver 5 reliques différentes.", req: (s, e) => e.length >= 5 },
             { id: 'e_15', name: "Archéologue du Vide", desc: "Trouver 15 reliques différentes.", req: (s, e) => e.length >= 15 },
-            { id: 'e_all', name: "Omniscience", desc: "Trouver toutes les reliques existantes (25).", req: (s, e) => e.length >= 25 },
+            { id: 'e_all', name: "Omniscience", desc: "Trouver toutes les reliques (25).", req: (s, e) => e.length >= 25 },
             { id: 'ano_1', name: "Chasseur de Failles", desc: "Capturer une anomalie temporelle.", req: (s, e, l, r, a) => a >= 1 },
             { id: 'click_master', name: "Réactivité", desc: "Capturer 10 anomalies temporelles.", req: (s, e, l, r, a) => a >= 10 },
             { id: 'ano_50', name: "Intercepteur", desc: "Capturer 50 anomalies temporelles.", req: (s, e, l, r, a) => a >= 50 },
             { id: 'ano_100', name: "Gardien des Réalités", desc: "Capturer 100 anomalies temporelles.", req: (s, e, l, r, a) => a >= 100 },
-            { id: 'res_1', name: "Le Grand Saut", desc: "Effectuer votre première résonance abyssale.", req: (s, e, l, r) => r >= 1 },
-            { id: 'res_5', name: "Fréquence Stable", desc: "Effectuer 5 résonances abyssales.", req: (s, e, l, r) => r >= 5 },
-            { id: 'res_10', name: "Maître de l'Abysse", desc: "Effectuer 10 résonances abyssales.", req: (s, e, l, r) => r >= 10 },
-            { id: 'res_25', name: "Éternel Retour", desc: "Effectuer 25 résonances abyssales.", req: (s, e, l, r) => r >= 25 },
+            { id: 'res_1', name: "Le Grand Saut", desc: "Effectuer votre première résonance.", req: (s, e, l, r) => r >= 1 },
+            { id: 'res_5', name: "Fréquence Stable", desc: "Effectuer 5 résonances.", req: (s, e, l, r) => r >= 5 },
+            { id: 'res_10', name: "Maître de l'Abysse", desc: "Effectuer 10 résonances.", req: (s, e, l, r) => r >= 10 },
+            { id: 'res_25', name: "Éternel Retour", desc: "Effectuer 25 résonances.", req: (s, e, l, r) => r >= 25 },
             { id: 'frag_10', name: "Éclats de Pouvoir", desc: "Cumuler 10 Fragments de Vide.", req: (s, e, l, r, a, f) => f >= 10 },
             { id: 'frag_100', name: "Richesse Absolue", desc: "Cumuler 100 Fragments de Vide.", req: (s, e, l, r, a, f) => f >= 100 },
-            { id: 'rich_start', name: "Héritage", desc: "Posséder plus de 50 fragments simultanément.", req: (s, e, l, r, a, f) => f >= 50 },
-            { id: 'tal_1', name: "Apprenti", desc: "Améliorer un talent pour la première fois.", req: (s, e, l, r, a, f, t) => (t.xp + t.eggs + t.fortune) >= 1 },
+            { id: 'rich_start', name: "Héritage", desc: "Posséder 50 fragments simultanément.", req: (s, e, l, r, a, f) => f >= 50 },
+            { id: 'tal_1', name: "Apprenti", desc: "Améliorer un talent.", req: (s, e, l, r, a, f, t) => (t.xp + t.eggs + t.fortune) >= 1 },
             { id: 'tal_max', name: "Spécialiste", desc: "Monter un talent au niveau 10.", req: (s, e, l, r, a, f, t) => t.xp >= 10 || t.eggs >= 10 || t.fortune >= 10 },
             { id: 'complete', name: "L'Abysse vous salue", desc: "Débloquer un total de 20 succès.", req: (s, e, l, r, a, f, t, ach) => ach >= 20 }
         ];
@@ -407,11 +398,9 @@
         }
 
         function hardReset() {
-            if (confirm("🚨 ATTENTION : Voulez-vous vraiment effacer TOUTE votre progression ? (Niveaux, Fragments, Succès, Reliques)")) {
-                if (confirm("Dernière confirmation : Cette action est irréversible !")) {
-                    localStorage.removeItem('abysse_exp_v3');
-                    location.reload();
-                }
+            if (confirm("🚨 ATTENTION : Voulez-vous vraiment effacer TOUTE votre progression ?")) {
+                localStorage.removeItem('abysse_exp_v3');
+                location.reload();
             }
         }
 
@@ -429,7 +418,7 @@
         }
 
         function onLevelUp() {
-            queueNotification('Niveau Atteint', `Strate ${gameState.level}`, '#6366f1', 'Votre pouvoir s\'étend.');
+            queueNotification('Niveau Atteint', `Niveau ${gameState.level}`, '#6366f1', 'Votre pouvoir s\'étend.');
             updateTalentUI();
             if (gameState.level >= 50) document.getElementById('prestige-zone').classList.remove('hidden');
         }
@@ -477,6 +466,7 @@
         }
 
         function checkAchievements() {
+            let anyNew = false;
             ACHIEVEMENTS.forEach(ach => {
                 if (!gameState.achievements.includes(ach.id)) {
                     if (ach.req(
@@ -491,18 +481,18 @@
                     )) {
                         gameState.achievements.push(ach.id);
                         addExp(100);
-                        renderAchievements();
+                        anyNew = true;
                         queueNotification('Succès', ach.name, '#4f46e5', ach.desc);
                     }
                 }
             });
+            if (anyNew) renderAchievements();
         }
 
         function prestige() {
             if (gameState.level < 50) return;
             const fragmentsToGain = Math.floor(gameState.level / 10);
-            const msg = `Résonance : Réinitialiser pour ${fragmentsToGain} Fragments ?`;
-            if (!window.confirm(msg)) return; 
+            if (!window.confirm(`Résonance : Réinitialiser pour ${fragmentsToGain} Fragments ?`)) return; 
             
             gameState.fragments += fragmentsToGain;
             gameState.prestigeCount++;
@@ -564,8 +554,6 @@
                 document.getElementById('fragments-count').textContent = gameState.fragments;
                 document.getElementById('res-count').textContent = gameState.prestigeCount;
                 document.getElementById('multiplier-display').textContent = (1 + gameState.fragments * 0.1).toFixed(1);
-            } else {
-                document.getElementById('prestige-stats').classList.add('hidden');
             }
             if (gameState.level >= 50) document.getElementById('prestige-zone').classList.remove('hidden');
             else document.getElementById('prestige-zone').classList.add('hidden');
@@ -580,45 +568,17 @@
             document.getElementById('talent-points').textContent = gameState.talentPoints;
         }
 
-        function getAchievementIcon(id) {
-            const icons = {
-                time: '<svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>',
-                level: '<svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m12 3-1.912 5.813a2 2 0 0 1-1.275 1.275L3 12l5.813 1.912a2 2 0 0 1 1.275 1.275L12 21l1.912-5.813a2 2 0 0 1 1.275-1.275L21 12l-5.813-1.912a2 2 0 0 1-1.275-1.275L12 3Z"/></svg>',
-                egg: '<svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22c6.23-.05 7.87-5.57 7.5-10C19 6 16 4 12 4S5 6 4.5 12c-.37 4.43 1.27 9.95 7.5 10z"/></svg>',
-                anomaly: '<svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M2 12h20"/><path d="M20 12v6a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2v-6"/><path d="M12 2v6"/><circle cx="12" cy="12" r="4"/></svg>',
-                res: '<svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2 2 7l10 5 10-5-10-5Z"/><path d="m2 17 10 5 10-5"/><path d="m2 12 10 5 10-5"/></svg>',
-                frag: '<svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 3h12l4 6-10 13L2 9Z"/><path d="M11 3 8 9l4 13 4-13-3-6"/><path d="M2 9h20"/></svg>',
-                talent: '<svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"/><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"/></svg>',
-                lock: '<svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>',
-                trophy: '<svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9H4.5a2.5 2.5 0 0 1 0-5H6"/><path d="M18 9h1.5a2.5 2.5 0 0 0 0-5H18"/><path d="M4 22h16"/><path d="M10 14.66V17c0 .55-.47.98-.97 1.21C7.85 18.75 7 20.24 7 22"/><path d="M14 14.66V17c0 .55.47.98.97 1.21C16.15 18.75 17 20.24 17 22"/><path d="M18 2H6v7a6 6 0 0 0 12 0V2Z"/></svg>'
-            };
-
-            if (id.startsWith('t_')) return icons.time;
-            if (id.startsWith('l_') || id === 'fast_lv') return icons.level;
-            if (id.startsWith('e_')) return icons.egg;
-            if (id.startsWith('ano') || id === 'click_master') return icons.anomaly;
-            if (id.startsWith('res')) return icons.res;
-            if (id.startsWith('frag') || id.startsWith('rich')) return icons.frag;
-            if (id.startsWith('tal')) return icons.talent;
-            if (id === 'complete') return icons.trophy;
-            return icons.time;
-        }
-
         function renderAchievements() {
             document.getElementById('tab-achievements').innerHTML = ACHIEVEMENTS.map(ach => {
                 const done = gameState.achievements.includes(ach.id);
-                const icon = done ? getAchievementIcon(ach.id) : getAchievementIcon('lock').replace('svg', 'svg style="opacity:0.3"');
-                
                 return `<div class="ach-card glass p-4 md:p-5 rounded-xl flex items-center gap-4 md:gap-5 ${done ? 'unlocked' : 'locked'}">
                     <div class="ach-icon">
-                        ${icon}
+                        ${done ? '<svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>' : ''}
                     </div>
                     <div class="flex-1 min-w-0">
                         <div class="flex justify-between items-center mb-1">
                             <h4 class="ach-title uppercase truncate pr-2">${ach.name}</h4>
-                            ${done 
-                                ? '<div class="h-2 w-2 rounded-full bg-emerald-400 shadow-[0_0_10px_rgba(52,211,153,0.8)]"></div>' 
-                                : ''}
+                            ${done ? '<div class="h-1.5 w-1.5 rounded-full bg-indigo-400"></div>' : ''}
                         </div>
                         <p class="ach-desc">${ach.desc}</p>
                     </div>
@@ -638,7 +598,6 @@
         }
 
         function updateTalentUI() {
-            const names = { xp: 'Flux de Vide', eggs: 'Sixième Sens', fortune: 'Appel Instable' };
             for (let id in gameState.talents) {
                 const btn = document.getElementById(`t-${id}`);
                 const lv = gameState.talents[id];
@@ -692,7 +651,6 @@
         }
 
         window.addEventListener('resize', initParticles);
-        window.addEventListener('orientationchange', () => setTimeout(initParticles, 100));
         window.onload = init;
     </script>
 </body>
