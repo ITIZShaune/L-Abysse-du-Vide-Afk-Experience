@@ -4,7 +4,7 @@
 </div>
 <div align="center">
 <h1>🎮 Concept du jeu</h1>
-<p><b>👉 **[Cliquez ici !](https://itizshaune.github.io/L-Abysse-du-Vide-Afk-Experience/)**
+<p><b>👉 [Cliquez ici !](https://itizshaune.github.io/L-Abysse-du-Vide-Afk-Experience/)
 </b></p>
 </div>
 Dans L'Abysse du Vide, vous incarnez une entité isolée explorant les profondeurs infinies du néant. Le jeu repose sur un système AFK (Idle) : le temps est votre ressource principale.
