@@ -200,7 +200,6 @@
                 this.masterGain = ctx.createGain();
                 this.masterGain.gain.value = 0;
                 
-                // Filtre pour rendre le son "étouffé" et abyssal
                 this.filter = ctx.createBiquadFilter();
                 this.filter.type = 'lowpass';
                 this.filter.frequency.value = 600; 
@@ -224,7 +223,6 @@
             },
             playDrone() {
                 if(this.droneNodes.length > 0) return;
-                // Accords profonds (C2, G2, C3)
                 const freqs = [65.41, 98.00, 130.81]; 
                 freqs.forEach(f => {
                     let ctx = getAudioCtx();
@@ -236,7 +234,6 @@
                     gain.gain.value = 0;
                     gain.gain.setTargetAtTime(0.2, ctx.currentTime, 5); 
                     
-                    // Léger effet de respiration (LFO)
                     let lfo = ctx.createOscillator();
                     lfo.type = 'sine';
                     lfo.frequency.value = 0.02 + Math.random() * 0.02; 
@@ -255,7 +252,6 @@
             playChime() {
                 if(!this.isPlaying) return;
                 if(Math.random() > 0.6) return;
-                // Notes aléatoires (Gamme Pentatonique majeure de Do)
                 const scale = [261.63, 293.66, 329.63, 392.00, 440.00, 523.25];
                 const freq = scale[Math.floor(Math.random() * scale.length)];
                 
@@ -278,7 +274,6 @@
             }
         };
 
-        // Déverrouillage Audio Global au premier clic (Règle Navigateur)
         document.body.addEventListener('click', () => {
             if(audioCtx && audioCtx.state === 'suspended') audioCtx.resume();
             if(!audioInitialized && gameState.soundEnabled) {
@@ -293,7 +288,6 @@
             loadSave(); applyTheme(); if(gameState.firstTime) startTutorial(); processOfflineProgress();
             initCanvas(); renderRelics(); renderAchievements(); updateUI(); updateTalentsUI(); updateCosmosUI(); updateForgeUI(); updateDivineUI();
             
-            // Initialisation UI Son
             document.getElementById('btn-sound-txt').textContent=gameState.soundEnabled?'Audio: ON':'Audio: OFF';
             document.getElementById('btn-sound-txt-mob').textContent=gameState.soundEnabled?'ON':'OFF';
 
@@ -366,13 +360,22 @@
         function updateTalentsUI() { document.getElementById('view-tp-count').textContent=gameState.talentPoints; ['xp','eggs','fortune'].forEach(t=>{ document.getElementById(`t-${t}-lv`).textContent=gameState.talents[t]; document.getElementById(`btn-t-${t}`).disabled=gameState.talentPoints<1; }); document.getElementById('btn-t-auto').textContent=gameState.talents.autocollect?"Acquis":"Débloquer (50)"; document.getElementById('btn-t-auto').disabled=gameState.talents.autocollect||gameState.talentPoints<50; document.getElementById('btn-t-bh').textContent=gameState.talents.blackhole?"Acquis":"Débloquer (100)"; document.getElementById('btn-t-bh').disabled=gameState.talents.blackhole||gameState.talentPoints<100; }
         function updateCosmosUI() { ['anomaly','compression','expansion'].forEach(t=>{ document.getElementById(`c-${t}-lv`).textContent=gameState.cosmic[t]; let btn=document.getElementById(`btn-c-${t}`), c=getCosmicCost(t); if(t==='compression'&&gameState.cosmic[t]>=10){ btn.textContent="MAX"; btn.disabled=true; }else{ btn.textContent=`(${c} MN)`; btn.disabled=gameState.darkMatter<c; } }); }
         function updateForgeUI() { document.getElementById('view-forge-frag').textContent=gameState.fragments; ['prism','collector','nexus'].forEach(t=>{ document.getElementById(`b-${t}-lv`).textContent=gameState.buildings[t]; let c=getBuildingCost(t), btn=document.getElementById(`btn-b-${t}`); btn.textContent=`Bâtir (${c} F)`; btn.disabled=gameState.fragments<c; }); }
-        function updateDivineUI() { ['time','blackhole'].forEach(t=>{ document.getElementById(`u-${t}-lv`).textContent=gameState.transcendence.upgrades[t]; let c=getDivineCost(t), btn=document.getElementById(`btn-u-${t}`); btn.textContent=`Éveiller (${c} É)`; btn.disabled=gameState.transcendence.shards<c; }); }
+        
+        function updateDivineUI() { 
+            ['time','blackhole'].forEach(t=>{ 
+                document.getElementById(`u-${t}-lv`).textContent=gameState.transcendence.upgrades[t]; 
+                let c=getDivineCost(t), btn=document.getElementById(`btn-u-${t}`); 
+                btn.textContent=`Éveiller (${c} É)`; 
+                btn.disabled=gameState.transcendence.shards<c; 
+            }); 
+        }
+        
         function renderRelics() { document.getElementById('view-egg-count').textContent=gameState.foundEggs.length; document.getElementById('relics-grid').innerHTML=EASTER_EGGS.map(e=>{ let f=gameState.foundEggs.includes(e.id); return `<div class="glass-card p-3 rounded-lg flex flex-col items-center justify-center text-center h-24 ${f?'':'opacity-40'}"><div class="w-6 h-6 rounded-full mb-2 shadow-inner" style="background:${f?e.color:'#222'}"></div><div class="text-[10px] uppercase font-bold ${f?'text-white':'text-slate-600'}">${f?e.name:'???'}</div></div>`; }).join(''); }
         function renderAchievements() { document.getElementById('achievements-grid').innerHTML=ACHIEVEMENTS.map(a=>{ let d=gameState.achievements.includes(a.id); return `<div class="glass-card p-4 rounded-xl flex items-center gap-4 ${d?'border-[rgba(var(--theme-p),0.4)] bg-[rgba(var(--theme-p),0.05)]':'opacity-60'}"><div class="w-10 h-10 flex items-center justify-center font-bold text-lg ${d?'text-[rgb(var(--theme-p))]':'text-transparent border border-dashed border-white/20'}">${d?'✓':''}</div><div><h4 class="text-sm font-bold uppercase ${d?'text-white':'text-slate-400'}">${a.name}</h4><p class="text-[10px] text-slate-500">${a.desc}</p></div></div>`; }).join(''); }
         function checkAchievements() { ACHIEVEMENTS.forEach(a=>{ if(!gameState.achievements.includes(a.id) && a.req(gameState.totalSeconds,gameState.level,gameState.foundEggs,gameState.prestigeCount,gameState.anomaliesCaught,gameState.darkMatter,gameState.blackHoleUses,gameState.buildings,gameState.transcendence)){ gameState.achievements.push(a.id); notify('SUCCÈS',a.name,'text-yellow-400'); renderAchievements(); } }); }
 
         function loadSave() { 
-            // Récupère en priorité l'ancienne sauvegarde (v6 ou v5) pour restaurer ta progression
+            // Charge les données v6 de priorité, sinon v5 ou v7
             let d = localStorage.getItem('abysse_exp_v6') || localStorage.getItem('abysse_exp_v5') || localStorage.getItem('abysse_exp_v7'); 
             if(d){ 
                 gameState={...gameState,...JSON.parse(d)}; 
@@ -381,7 +384,10 @@
                 if(!gameState.transcendence) gameState.transcendence={count:0,shards:0,upgrades:{time:0,blackhole:0}}; 
             } 
         }
-        function saveGame() { gameState.lastSaveTime=Date.now(); localStorage.setItem('abysse_exp_v6',JSON.stringify(gameState)); }
+        function saveGame() { 
+            gameState.lastSaveTime=Date.now(); 
+            localStorage.setItem('abysse_exp_v6',JSON.stringify(gameState)); 
+        }
         
         function processOfflineProgress() { if(!gameState.lastSaveTime||gameState.firstTime) return; let ds=Math.floor((Date.now()-gameState.lastSaveTime)/1000); if(ds>10){ gameState.secondsPassed+=ds; gameState.totalSeconds+=ds; let xp=calculatePassiveXP()*ds, dm=0; addExp(xp); if(gameState.level>=25) dm+=calculatePassiveDM()*ds; if(gameState.buildings.collector>0) dm+=(gameState.buildings.collector/60)*ds; if(dm>0) gameState.darkMatter+=dm; setTimeout(()=>notify('Absence',`${formatTime(ds)} | +${Math.floor(xp)}XP`,'text-emerald-400'),1500); } }
 
@@ -460,3 +466,5 @@
     </script>
 </body>
 </html>
+
+
