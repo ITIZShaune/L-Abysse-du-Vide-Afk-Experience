@@ -375,18 +375,24 @@
         function checkAchievements() { ACHIEVEMENTS.forEach(a=>{ if(!gameState.achievements.includes(a.id) && a.req(gameState.totalSeconds,gameState.level,gameState.foundEggs,gameState.prestigeCount,gameState.anomaliesCaught,gameState.darkMatter,gameState.blackHoleUses,gameState.buildings,gameState.transcendence)){ gameState.achievements.push(a.id); notify('SUCCÈS',a.name,'text-yellow-400'); renderAchievements(); } }); }
 
         function loadSave() { 
-            // Charge les données v6 de priorité, sinon v5 ou v7
-            let d = localStorage.getItem('abysse_exp_v6') || localStorage.getItem('abysse_exp_v5') || localStorage.getItem('abysse_exp_v7'); 
-            if(d){ 
-                gameState={...gameState,...JSON.parse(d)}; 
-                if(!gameState.cosmic) gameState.cosmic={anomaly:0,compression:0,expansion:0}; 
-                if(!gameState.buildings) gameState.buildings={prism:0,collector:0,nexus:0}; 
-                if(!gameState.transcendence) gameState.transcendence={count:0,shards:0,upgrades:{time:0,blackhole:0}}; 
-            } 
+            try {
+                // Charge les données v6 de priorité, sinon v5 ou v7
+                let d = localStorage.getItem('abysse_exp_v6') || localStorage.getItem('abysse_exp_v5') || localStorage.getItem('abysse_exp_v7'); 
+                if(d){ 
+                    gameState={...gameState,...JSON.parse(d)}; 
+                    if(!gameState.cosmic) gameState.cosmic={anomaly:0,compression:0,expansion:0}; 
+                    if(!gameState.buildings) gameState.buildings={prism:0,collector:0,nexus:0}; 
+                    if(!gameState.transcendence) gameState.transcendence={count:0,shards:0,upgrades:{time:0,blackhole:0}}; 
+                } 
+            } catch (e) {
+                console.warn("Mode Aperçu : Sauvegarde locale désactivée.");
+            }
         }
         function saveGame() { 
             gameState.lastSaveTime=Date.now(); 
-            localStorage.setItem('abysse_exp_v6',JSON.stringify(gameState)); 
+            try {
+                localStorage.setItem('abysse_exp_v6',JSON.stringify(gameState)); 
+            } catch (e) {} // Ignore l'erreur silencieusement dans l'aperçu
         }
         
         function processOfflineProgress() { if(!gameState.lastSaveTime||gameState.firstTime) return; let ds=Math.floor((Date.now()-gameState.lastSaveTime)/1000); if(ds>10){ gameState.secondsPassed+=ds; gameState.totalSeconds+=ds; let xp=calculatePassiveXP()*ds, dm=0; addExp(xp); if(gameState.level>=25) dm+=calculatePassiveDM()*ds; if(gameState.buildings.collector>0) dm+=(gameState.buildings.collector/60)*ds; if(dm>0) gameState.darkMatter+=dm; setTimeout(()=>notify('Absence',`${formatTime(ds)} | +${Math.floor(xp)}XP`,'text-emerald-400'),1500); } }
@@ -429,7 +435,7 @@
         function copySave() { document.getElementById('export-data').select(); document.execCommand('copy'); notify('SUCCÈS','Copié','text-emerald-400'); }
         function importSave() { try{ gameState={...gameState,...JSON.parse(atob(document.getElementById('import-data').value))}; saveGame(); location.reload(); }catch(e){ alert("Invalide"); } }
         function checkAdmin() { if(document.getElementById('admin-pwd').value===ADMIN_PASSWORD) document.getElementById('admin-tools').classList.remove('hidden'); }
-        function adminCheat(t) { if(t==='xp') addExp(10000); if(t==='tp'){ gameState.talentPoints+=50; updateTalentsUI(); updateUI(); } if(t==='dm'){ gameState.darkMatter+=10000; updateUI(); } if(t==='frag'){ gameState.fragments+=100; updateUI(); updateForgeUI(); } if(t==='reset' && confirm('RESET TOTAL ?')){ localStorage.clear(); location.reload(); } }
+        function adminCheat(t) { if(t==='xp') addExp(10000); if(t==='tp'){ gameState.talentPoints+=50; updateTalentsUI(); updateUI(); } if(t==='dm'){ gameState.darkMatter+=10000; updateUI(); } if(t==='frag'){ gameState.fragments+=100; updateUI(); updateForgeUI(); } if(t==='reset' && confirm('RESET TOTAL ?')){ try{localStorage.clear();}catch(e){} location.reload(); } }
 
         let particles=[], canvas=document.getElementById('bg-canvas'), ctx=canvas.getContext('2d');
         function initCanvas() { canvas.width=window.innerWidth; canvas.height=window.innerHeight; particles=Array.from({length:80},()=>({x:Math.random()*canvas.width,y:Math.random()*canvas.height,s:Math.random()*2,sp:Math.random()*0.5+0.1})); requestAnimationFrame(drawCanvas); }
@@ -466,5 +472,6 @@
     </script>
 </body>
 </html>
+
 
 
