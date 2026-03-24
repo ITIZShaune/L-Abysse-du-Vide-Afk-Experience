@@ -174,7 +174,7 @@
                     </div>
                 </div>
 
-                <div id="view-relics" class="hidden"><h2 class="text-2xl font-bold font-num mb-6 text-white">Reliques Découvertes <span class="text-sm text-slate-400 bg-black/30 px-3 py-1 rounded-full"><span id="view-egg-count">0</span> / 50</span></h2><div id="relics-grid" class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-3"></div></div>
+                <div id="view-relics" class="hidden"><h2 class="text-2xl font-bold font-num mb-6 text-white">Reliques Découvertes <span class="text-sm text-slate-400 bg-black/30 px-3 py-1 rounded-full"><span id="view-egg-count">0</span> / 100</span></h2><div id="relics-grid" class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-3"></div></div>
                 <div id="view-achievements" class="hidden"><h2 class="text-2xl font-bold font-num mb-6 text-white">Registre des Succès</h2><div id="achievements-grid" class="grid grid-cols-1 md:grid-cols-2 gap-3 pb-20"></div></div>
             </div>
             
@@ -191,29 +191,200 @@
     <script>
         const ADMIN_PASSWORD = "Abyss#2025!VoidX10$Eternal", VIEWS = ['core','talents','cosmos','forge','transcendence','relics','achievements'];
         const THEMES = [{t:0,p:'99, 102, 241',s:'168, 85, 247'},{t:1,p:'16, 185, 129',s:'14, 165, 233'},{t:3,p:'239, 68, 68',s:'245, 158, 11'},{t:5,p:'236, 72, 153',s:'139, 92, 246'},{t:10,p:'255, 255, 255',s:'148, 163, 184'}];
-        const EASTER_EGGS=[{id:1,name:"Une ombre passe...",chance:1,color:"#9ca3af"},{id:2,name:"Murmure",chance:.5,color:"#d1d5db"},{id:3,name:"Flash",chance:.3,color:"#fff"},{id:4,name:"Écho",chance:.2,color:"#93c5fd"},{id:5,name:"Poussière",chance:.15,color:"#fef08a"},{id:6,name:"Vibration",chance:.1,color:"#c084fc"},{id:7,name:"Erreur 404",chance:.08,color:"#ef4444"},{id:8,name:"Regard",chance:.05,color:"#4f46e5"},{id:9,name:"Singularité",chance:.04,color:"#312e81"},{id:10,name:"Déjà-vu",chance:.03,color:"#34d399"},{id:11,name:"Odin",chance:.02,color:"#3b82f6"},{id:12,name:"Code",chance:.015,color:"#22c55e"},{id:13,name:"Chat",chance:.01,color:"#fb923c"},{id:14,name:"Onde",chance:.008,color:"#67e8f9"},{id:15,name:"Paradoxe",chance:.007,color:"#f43f5e"},{id:16,name:"Fragment",chance:.006,color:"#fcd34d"},{id:17,name:"CPU",chance:.005,color:"#dc2626"},{id:18,name:"Pensée",chance:.004,color:"#f472b6"},{id:19,name:"Cthulhu",chance:.003,color:"#0d9488"},{id:20,name:"Zéro Absolu",chance:.002,color:"#bae6fd"},{id:21,name:"42",chance:.001,color:"#818cf8"},{id:22,name:"Créateur",chance:.0008,color:"#eab308"},{id:23,name:"Supernova",chance:.0005,color:"#ea580c"},{id:24,name:"Collision",chance:.0002,color:"#d946ef"},{id:25,name:"Oméga",chance:.0001,color:"#f8fafc"},{id:26,name:"Matière Noire",chance:.00009,color:"#1e1b4b"},{id:27,name:"Hawking",chance:.00008,color:"#e879f9"},{id:28,name:"Monolithe",chance:.00007,color:"#171717"},{id:29,name:"Puce",chance:.00006,color:"#2dd4bf"},{id:30,name:"Éclat",chance:.00005,color:"#f0abfc"},{id:31,name:"Larmes",chance:.00005,color:"#60a5fa"},{id:32,name:"Cube",chance:.00004,color:"#0ea5e9"},{id:33,name:"ADN",chance:.00004,color:"#84cc16"},{id:34,name:"Trou de Ver",chance:.00003,color:"#a855f7"},{id:35,name:"Constellation",chance:.00003,color:"#fcd34d"},{id:36,name:"Planck",chance:.000025,color:"#fb7185"},{id:37,name:"Higgs",chance:.00002,color:"#fbbf24"},{id:38,name:"Horloge",chance:.00002,color:"#b91c1c"},{id:39,name:"Silence",chance:.000015,color:"#0f172a"},{id:40,name:"Matrice",chance:.000015,color:"#22c55e"},{id:41,name:"Androïde",chance:.00001,color:"#38bdf8"},{id:42,name:"Lune",chance:.00001,color:"#e2e8f0"},{id:43,name:"Wow!",chance:.000009,color:"#fca5a5"},{id:44,name:"Dyson",chance:.000008,color:"#f59e0b"},{id:45,name:"Entropie",chance:.000007,color:"#7c3aed"},{id:46,name:"Lumière",chance:.000006,color:"#67e8f9"},{id:47,name:"5ème",chance:.000005,color:"#f97316"},{id:48,name:"Konami",chance:.000004,color:"#ef4444"},{id:49,name:"Fin Sim",chance:.000002,color:"#000"},{id:50,name:"Vide Absolu",chance:.000001,color:"#fff"}];
         
-        const ACHIEVEMENTS=[
-            // Originaux
-            {id:'t_1m',name:"Souffle",desc:"1 min.",req:s=>s>=60},{id:'t_1h',name:"Méditation",desc:"1 heure.",req:s=>s>=3600},{id:'t_24h',name:"Éternité",desc:"24 heures.",req:s=>s>=86400},{id:'l_50',name:"Transmutation",desc:"Niveau 50.",req:(s,l)=>l>=50},{id:'l_200',name:"Transcendance",desc:"Niveau 200.",req:(s,l)=>l>=200},{id:'e_1',name:"Curiosité",desc:"1ère relique.",req:(s,l,e)=>e.length>=1},{id:'ano_100',name:"Chaos",desc:"100 anomalies.",req:(s,l,e,r,a)=>a>=100},{id:'res_1',name:"Saut",desc:"1ère résonance.",req:(s,l,e,r)=>r>=1},{id:'bh_1',name:"Singularité",desc:"Trou Noir.",req:(s,l,e,r,a,dm,bh)=>bh>0},{id:'forge_1',name:"Fer",desc:"1er Bâtiment.",req:(s,l,e,r,a,dm,bh,b)=>(b.prism+b.collector+b.nexus)>0},{id:'trans_1',name:"Infini",desc:"Transcendance.",req:(s,l,e,r,a,dm,bh,b,t)=>t.count>0},
-            // Temps
-            {id:'t_5m',name:"Éveil",desc:"5 min.",req:s=>s>=300},{id:'t_10m',name:"Focalisation",desc:"10 min.",req:s=>s>=600},{id:'t_30m',name:"Patience",desc:"30 min.",req:s=>s>=1800},{id:'t_6h',name:"Dévotion",desc:"6 h.",req:s=>s>=21600},{id:'t_12h',name:"Astral",desc:"12 h.",req:s=>s>=43200},
-            // Niveaux
-            {id:'l_10',name:"Apprenti",desc:"Niveau 10.",req:(s,l)=>l>=10},{id:'l_25',name:"Adepte",desc:"Niveau 25.",req:(s,l)=>l>=25},{id:'l_100',name:"Maître",desc:"Niveau 100.",req:(s,l)=>l>=100},{id:'l_150',name:"Grand Maître",desc:"Niveau 150.",req:(s,l)=>l>=150},{id:'l_300',name:"Demi-Dieu",desc:"Niveau 300.",req:(s,l)=>l>=300},{id:'l_500',name:"Dieu",desc:"Niveau 500.",req:(s,l)=>l>=500},{id:'l_1000',name:"Titan",desc:"Niveau 1000.",req:(s,l)=>l>=1000},
-            // Reliques
-            {id:'e_5',name:"Explorateur",desc:"5 reliques.",req:(s,l,e)=>e.length>=5},{id:'e_10',name:"Archéologue",desc:"10 reliques.",req:(s,l,e)=>e.length>=10},{id:'e_25',name:"Collectionneur",desc:"25 reliques.",req:(s,l,e)=>e.length>=25},{id:'e_40',name:"Historien",desc:"40 reliques.",req:(s,l,e)=>e.length>=40},{id:'e_50',name:"Omniscient",desc:"50 reliques.",req:(s,l,e)=>e.length>=50},
-            // Anomalies
-            {id:'a_10',name:"Réflexe",desc:"10 anomalies.",req:(s,l,e,r,a)=>a>=10},{id:'a_50',name:"Chasseur",desc:"50 anomalies.",req:(s,l,e,r,a)=>a>=50},{id:'a_250',name:"Prédateur",desc:"250 anomalies.",req:(s,l,e,r,a)=>a>=250},{id:'a_500',name:"Anomalie Vivante",desc:"500 anomalies.",req:(s,l,e,r,a)=>a>=500},{id:'a_1000',name:"Seigneur du Temps",desc:"1000 anomalies.",req:(s,l,e,r,a)=>a>=1000},{id:'a_5000',name:"Moissonneur",desc:"5000 anomalies.",req:(s,l,e,r,a)=>a>=5000},
-            // Résonances
-            {id:'r_5',name:"Boucle",desc:"5 résonances.",req:(s,l,e,r)=>r>=5},{id:'r_10',name:"Spirale",desc:"10 résonances.",req:(s,l,e,r)=>r>=10},{id:'r_25',name:"Tesseract",desc:"25 résonances.",req:(s,l,e,r)=>r>=25},{id:'r_50',name:"Ouroboros",desc:"50 résonances.",req:(s,l,e,r)=>r>=50},{id:'r_100',name:"Réalité Brisée",desc:"100 résonances.",req:(s,l,e,r)=>r>=100},
-            // Matière Noire
-            {id:'dm_100',name:"Ombre",desc:"100 Mat. Noire.",req:(s,l,e,r,a,dm)=>dm>=100},{id:'dm_1k',name:"Obscurité",desc:"1k Mat. Noire.",req:(s,l,e,r,a,dm)=>dm>=1000},{id:'dm_10k',name:"Néant",desc:"10k Mat. Noire.",req:(s,l,e,r,a,dm)=>dm>=10000},{id:'dm_100k',name:"Abîme",desc:"100k Mat. Noire.",req:(s,l,e,r,a,dm)=>dm>=100000},{id:'dm_1m',name:"Trou Supermassif",desc:"1M Mat. Noire.",req:(s,l,e,r,a,dm)=>dm>=1000000},
-            // Trou Noir
-            {id:'bh_5',name:"Aspirateur",desc:"Trou Noir 5x.",req:(s,l,e,r,a,dm,bh)=>bh>=5},{id:'bh_10',name:"Horizon",desc:"Trou Noir 10x.",req:(s,l,e,r,a,dm,bh)=>bh>=10},{id:'bh_50',name:"Ergastosphère",desc:"Trou Noir 50x.",req:(s,l,e,r,a,dm,bh)=>bh>=50},{id:'bh_100',name:"Singularité Nue",desc:"Trou Noir 100x.",req:(s,l,e,r,a,dm,bh)=>bh>=100},
-            // Bâtiments
-            {id:'b_10',name:"Architecte",desc:"10 Bâtiments.",req:(s,l,e,r,a,dm,bh,b)=>(b.prism+b.collector+b.nexus)>=10},{id:'b_50',name:"Bâtisseur",desc:"50 Bâtiments.",req:(s,l,e,r,a,dm,bh,b)=>(b.prism+b.collector+b.nexus)>=50},{id:'b_100',name:"Mégastructure",desc:"100 Bât.",req:(s,l,e,r,a,dm,bh,b)=>(b.prism+b.collector+b.nexus)>=100},{id:'b_p10',name:"Optique",desc:"Prisme Niv.10.",req:(s,l,e,r,a,dm,bh,b)=>b.prism>=10},{id:'b_c10',name:"Vortex",desc:"Collecteur Niv.10.",req:(s,l,e,r,a,dm,bh,b)=>b.collector>=10},{id:'b_n10',name:"Réseau",desc:"Nexus Niv.10.",req:(s,l,e,r,a,dm,bh,b)=>b.nexus>=10},
-            // Transcendance
-            {id:'t_c2',name:"Double Ascension",desc:"2 Transcendances.",req:(s,l,e,r,a,dm,bh,b,t)=>t.count>=2},{id:'t_c5',name:"Panthéon",desc:"5 Transcendances.",req:(s,l,e,r,a,dm,bh,b,t)=>t.count>=5},{id:'t_c10',name:"Univers Cendré",desc:"10 Transcendances.",req:(s,l,e,r,a,dm,bh,b,t)=>t.count>=10},{id:'t_s10',name:"Étincelle",desc:"10 Éclats.",req:(s,l,e,r,a,dm,bh,b,t)=>t.shards>=10},{id:'t_s100',name:"Aura Divine",desc:"100 Éclats.",req:(s,l,e,r,a,dm,bh,b,t)=>t.shards>=100},{id:'t_u1',name:"Éveil Divin",desc:"1 Amélio. Divine.",req:(s,l,e,r,a,dm,bh,b,t)=>(t.upgrades.time+t.upgrades.blackhole)>=1},{id:'t_u10',name:"Pleine Puissance",desc:"10 Amélio. Divines.",req:(s,l,e,r,a,dm,bh,b,t)=>(t.upgrades.time+t.upgrades.blackhole)>=10}
+        const EASTER_EGGS = [
+            // --- COMMUNS (1-20) ---
+            {id:1,name:"Une ombre passe...",chance:1,color:"#9ca3af"},
+            {id:2,name:"Murmure",chance:0.5,color:"#d1d5db"},
+            {id:3,name:"Flash",chance:0.3,color:"#ffffff"},
+            {id:4,name:"Écho",chance:0.2,color:"#93c5fd"},
+            {id:5,name:"Poussière",chance:0.15,color:"#fef08a"},
+            {id:6,name:"Vibration",chance:0.1,color:"#c084fc"},
+            {id:7,name:"Erreur 404",chance:0.08,color:"#ef4444"},
+            {id:8,name:"Regard",chance:0.05,color:"#4f46e5"},
+            {id:9,name:"Singularité",chance:0.04,color:"#312e81"},
+            {id:10,name:"Déjà-vu",chance:0.03,color:"#34d399"},
+            {id:11,name:"Odin",chance:0.02,color:"#3b82f6"},
+            {id:12,name:"Code",chance:0.015,color:"#22c55e"},
+            {id:13,name:"Chat",chance:0.01,color:"#fb923c"},
+            {id:14,name:"Onde",chance:0.008,color:"#67e8f9"},
+            {id:15,name:"Paradoxe",chance:0.007,color:"#f43f5e"},
+            {id:16,name:"Fragment",chance:0.006,color:"#fcd34d"},
+            {id:17,name:"CPU",chance:0.005,color:"#dc2626"},
+            {id:18,name:"Pensée",chance:0.004,color:"#f472b6"},
+            {id:19,name:"Cthulhu",chance:0.003,color:"#0d9488"},
+            {id:20,name:"Zéro Absolu",chance:0.002,color:"#bae6fd"},
+
+            // --- RARES (21-40) ---
+            {id:21,name:"42",chance:0.001,color:"#818cf8"},
+            {id:22,name:"Créateur",chance:0.0008,color:"#eab308"},
+            {id:23,name:"Supernova",chance:0.0005,color:"#ea580c"},
+            {id:24,name:"Collision",chance:0.0004,color:"#d946ef"},
+            {id:25,name:"Oméga",chance:0.0003,color:"#f8fafc"},
+            {id:26,name:"Matière Noire",chance:0.0002,color:"#1e1b4b"},
+            {id:27,name:"Hawking",chance:0.0001,color:"#e879f9"},
+            {id:28,name:"Monolithe",chance:0.00009,color:"#171717"},
+            {id:29,name:"Puce",chance:0.00008,color:"#2dd4bf"},
+            {id:30,name:"Éclat",chance:0.00007,color:"#f0abfc"},
+            {id:31,name:"Larmes",chance:0.00006,color:"#60a5fa"},
+            {id:32,name:"Cube",chance:0.00005,color:"#0ea5e9"},
+            {id:33,name:"ADN",chance:0.00004,color:"#84cc16"},
+            {id:34,name:"Trou de Ver",chance:0.00003,color:"#a855f7"},
+            {id:35,name:"Constellation",chance:0.00002,color:"#fcd34d"},
+            {id:36,name:"Planck",chance:0.00001,color:"#fb7185"},
+            {id:37,name:"Higgs",chance:0.000009,color:"#fbbf24"},
+            {id:38,name:"Horloge",chance:0.000008,color:"#b91c1c"},
+            {id:39,name:"Silence",chance:0.000007,color:"#0f172a"},
+            {id:40,name:"Matrice",chance:0.000006,color:"#22c55e"},
+
+            // --- ÉPIQUES (41-60) ---
+            {id:41,name:"Androïde",chance:0.000005,color:"#38bdf8"},
+            {id:42,name:"Lune",chance:0.000004,color:"#e2e8f0"},
+            {id:43,name:"Wow!",chance:0.000003,color:"#fca5a5"},
+            {id:44,name:"Dyson",chance:0.000002,color:"#f59e0b"},
+            {id:45,name:"Entropie",chance:0.000001,color:"#7c3aed"},
+            {id:46,name:"Lumière",chance:0.0000009,color:"#67e8f9"},
+            {id:47,name:"5ème",chance:0.0000008,color:"#f97316"},
+            {id:48,name:"Konami",chance:0.0000007,color:"#ef4444"},
+            {id:49,name:"Fin Sim",chance:0.0000006,color:"#000000"},
+            {id:50,name:"Vide Absolu",chance:0.0000005,color:"#ffffff"},
+            {id:51,name:"Naine Blanche",chance:0.0000004,color:"#fdf8ff"},
+            {id:52,name:"Pulsar",chance:0.0000003,color:"#8b5cf6"},
+            {id:53,name:"Quasar",chance:0.0000002,color:"#f43f5e"},
+            {id:54,name:"Trou Blanc",chance:0.0000001,color:"#e0f2fe"},
+            {id:55,name:"Mat. Exotique",chance:0.00000009,color:"#d946ef"},
+            {id:56,name:"Énergie Sombre",chance:0.00000008,color:"#4c1d95"},
+            {id:57,name:"Antimatière",chance:0.00000007,color:"#be123c"},
+            {id:58,name:"Tachyon",chance:0.00000006,color:"#34d399"},
+            {id:59,name:"Boson",chance:0.00000005,color:"#fcd34d"},
+            {id:60,name:"Fermion",chance:0.00000004,color:"#60a5fa"},
+
+            // --- LÉGENDAIRES (61-80) ---
+            {id:61,name:"Gluon",chance:0.00000003,color:"#a3e635"},
+            {id:62,name:"Graviton",chance:0.00000002,color:"#94a3b8"},
+            {id:63,name:"Corde",chance:0.00000001,color:"#fb923c"},
+            {id:64,name:"Brane",chance:0.000000009,color:"#c084fc"},
+            {id:65,name:"Multivers",chance:0.000000008,color:"#10b981"},
+            {id:66,name:"Dimension X",chance:0.000000007,color:"#ef4444"},
+            {id:67,name:"Hyperespace",chance:0.000000006,color:"#06b6d4"},
+            {id:68,name:"Warp",chance:0.000000005,color:"#8b5cf6"},
+            {id:69,name:"Portail",chance:0.000000004,color:"#ec4899"},
+            {id:70,name:"Rift",chance:0.000000003,color:"#14b8a6"},
+            {id:71,name:"Boucle",chance:0.000000002,color:"#eab308"},
+            {id:72,name:"Papillon",chance:0.000000001,color:"#f43f5e"},
+            {id:73,name:"Schrödinger",chance:0.0000000009,color:"#64748b"},
+            {id:74,name:"Maxwell",chance:0.0000000008,color:"#dc2626"},
+            {id:75,name:"Matriochka",chance:0.0000000007,color:"#d97706"},
+            {id:76,name:"Anneau-Monde",chance:0.0000000006,color:"#22d3ee"},
+            {id:77,name:"O'Neill",chance:0.0000000005,color:"#818cf8"},
+            {id:78,name:"Génération",chance:0.0000000004,color:"#a8a29e"},
+            {id:79,name:"Arche",chance:0.0000000003,color:"#fbbf24"},
+            {id:80,name:"Von Neumann",chance:0.0000000002,color:"#34d399"},
+
+            // --- DIVINS / MYTHIQUES (81-100) ---
+            {id:81,name:"Obélisque",chance:0.0000000001,color:"#111827"},
+            {id:82,name:"Cristal Temp.",chance:0.00000000009,color:"#a7f3d0"},
+            {id:83,name:"Éther Pur",chance:0.00000000008,color:"#c4b5fd"},
+            {id:84,name:"Quintessence",chance:0.00000000007,color:"#fbcfe8"},
+            {id:85,name:"Aura",chance:0.00000000006,color:"#fef08a"},
+            {id:86,name:"Âme Stellaire",chance:0.00000000005,color:"#bfdbfe"},
+            {id:87,name:"Esprit Ancien",chance:0.00000000004,color:"#99f6e4"},
+            {id:88,name:"Conscience",chance:0.00000000003,color:"#fcd34d"},
+            {id:89,name:"Rêve Astrale",chance:0.00000000002,color:"#c084fc"},
+            {id:90,name:"Cauchemar",chance:0.00000000001,color:"#7f1d1d"},
+            {id:91,name:"Illusion",chance:0.000000000009,color:"#f472b6"},
+            {id:92,name:"Mirage",chance:0.000000000008,color:"#38bdf8"},
+            {id:93,name:"Hologramme",chance:0.000000000007,color:"#4ade80"},
+            {id:94,name:"Glitch Matrix",chance:0.000000000006,color:"#16a34a"},
+            {id:95,name:"Nœud Causal",chance:0.000000000005,color:"#ea580c"},
+            {id:96,name:"Filament",chance:0.000000000004,color:"#cbd5e1"},
+            {id:97,name:"Fractale",chance:0.000000000003,color:"#d946ef"},
+            {id:98,name:"L'Équation",chance:0.000000000002,color:"#2563eb"},
+            {id:99,name:"L'Auteur",chance:0.000000000001,color:"#b45309"},
+            {id:100,name:"L'Architecte",chance:0.0000000000001,color:"#ffffff"}
+        ];
+
+        const ACHIEVEMENTS = [
+            // --- TEMPS ---
+            {id:'t_1m',name:"Souffle",desc:"1 min.",req:s=>s>=60},
+            {id:'t_5m',name:"Éveil",desc:"5 min.",req:s=>s>=300},
+            {id:'t_10m',name:"Focalisation",desc:"10 min.",req:s=>s>=600},
+            {id:'t_30m',name:"Patience",desc:"30 min.",req:s=>s>=1800},
+            {id:'t_1h',name:"Méditation",desc:"1 heure.",req:s=>s>=3600},
+            {id:'t_6h',name:"Dévotion",desc:"6 heures.",req:s=>s>=21600},
+            {id:'t_12h',name:"Astral",desc:"12 heures.",req:s=>s>=43200},
+            {id:'t_24h',name:"Éternité",desc:"24 heures.",req:s=>s>=86400},
+            
+            // --- NIVEAUX ---
+            {id:'l_10',name:"Apprenti",desc:"Niveau 10.",req:(s,l)=>l>=10},
+            {id:'l_25',name:"Adepte",desc:"Niveau 25.",req:(s,l)=>l>=25},
+            {id:'l_50',name:"Transmutation",desc:"Niveau 50.",req:(s,l)=>l>=50},
+            {id:'l_100',name:"Maître",desc:"Niveau 100.",req:(s,l)=>l>=100},
+            {id:'l_150',name:"Grand Maître",desc:"Niveau 150.",req:(s,l)=>l>=150},
+            {id:'l_200',name:"Transcendance",desc:"Niveau 200.",req:(s,l)=>l>=200},
+            {id:'l_300',name:"Demi-Dieu",desc:"Niveau 300.",req:(s,l)=>l>=300},
+            {id:'l_500',name:"Dieu",desc:"Niveau 500.",req:(s,l)=>l>=500},
+            {id:'l_1000',name:"Titan",desc:"Niveau 1000.",req:(s,l)=>l>=1000},
+            
+            // --- RELIQUES ---
+            {id:'e_1',name:"Curiosité",desc:"1ère relique.",req:(s,l,e)=>e.length>=1},
+            {id:'e_5',name:"Explorateur",desc:"5 reliques.",req:(s,l,e)=>e.length>=5},
+            {id:'e_10',name:"Archéologue",desc:"10 reliques.",req:(s,l,e)=>e.length>=10},
+            {id:'e_25',name:"Collectionneur",desc:"25 reliques.",req:(s,l,e)=>e.length>=25},
+            {id:'e_40',name:"Historien",desc:"40 reliques.",req:(s,l,e)=>e.length>=40},
+            {id:'e_50',name:"Mythologue",desc:"50 reliques.",req:(s,l,e)=>e.length>=50},
+            {id:'e_75',name:"Savant Fou",desc:"75 reliques.",req:(s,l,e)=>e.length>=75},
+            {id:'e_100',name:"L'Omniscient",desc:"100 reliques.",req:(s,l,e)=>e.length>=100},
+            
+            // --- ANOMALIES ---
+            {id:'a_10',name:"Réflexe",desc:"10 anomalies.",req:(s,l,e,r,a)=>a>=10},
+            {id:'a_50',name:"Chasseur",desc:"50 anomalies.",req:(s,l,e,r,a)=>a>=50},
+            {id:'ano_100',name:"Chaos",desc:"100 anomalies.",req:(s,l,e,r,a)=>a>=100},
+            {id:'a_250',name:"Prédateur",desc:"250 anomalies.",req:(s,l,e,r,a)=>a>=250},
+            {id:'a_500',name:"Anomalie Vivante",desc:"500 anomalies.",req:(s,l,e,r,a)=>a>=500},
+            {id:'a_1000',name:"Seigneur du Temps",desc:"1000 anomalies.",req:(s,l,e,r,a)=>a>=1000},
+            {id:'a_5000',name:"Moissonneur",desc:"5000 anomalies.",req:(s,l,e,r,a)=>a>=5000},
+            
+            // --- RÉSONANCES ---
+            {id:'res_1',name:"Saut",desc:"1ère résonance.",req:(s,l,e,r)=>r>=1},
+            {id:'r_5',name:"Boucle",desc:"5 résonances.",req:(s,l,e,r)=>r>=5},
+            {id:'r_10',name:"Spirale",desc:"10 résonances.",req:(s,l,e,r)=>r>=10},
+            {id:'r_25',name:"Tesseract",desc:"25 résonances.",req:(s,l,e,r)=>r>=25},
+            {id:'r_50',name:"Ouroboros",desc:"50 résonances.",req:(s,l,e,r)=>r>=50},
+            {id:'r_100',name:"Réalité Brisée",desc:"100 résonances.",req:(s,l,e,r)=>r>=100},
+            
+            // --- MATIÈRE NOIRE ---
+            {id:'dm_100',name:"Ombre",desc:"100 Mat. Noire.",req:(s,l,e,r,a,dm)=>dm>=100},
+            {id:'dm_1k',name:"Obscurité",desc:"1k Mat. Noire.",req:(s,l,e,r,a,dm)=>dm>=1000},
+            {id:'dm_10k',name:"Néant",desc:"10k Mat. Noire.",req:(s,l,e,r,a,dm)=>dm>=10000},
+            {id:'dm_100k',name:"Abîme",desc:"100k Mat. Noire.",req:(s,l,e,r,a,dm)=>dm>=100000},
+            {id:'dm_1m',name:"Trou Supermassif",desc:"1M Mat. Noire.",req:(s,l,e,r,a,dm)=>dm>=1000000},
+            
+            // --- TROU NOIR ---
+            {id:'bh_1',name:"Singularité",desc:"Trou Noir 1x.",req:(s,l,e,r,a,dm,bh)=>bh>=1},
+            {id:'bh_5',name:"Aspirateur",desc:"Trou Noir 5x.",req:(s,l,e,r,a,dm,bh)=>bh>=5},
+            {id:'bh_10',name:"Horizon",desc:"Trou Noir 10x.",req:(s,l,e,r,a,dm,bh)=>bh>=10},
+            {id:'bh_50',name:"Ergastosphère",desc:"Trou Noir 50x.",req:(s,l,e,r,a,dm,bh)=>bh>=50},
+            {id:'bh_100',name:"Singularité Nue",desc:"Trou Noir 100x.",req:(s,l,e,r,a,dm,bh)=>bh>=100},
+            
+            // --- BÂTIMENTS ---
+            {id:'forge_1',name:"Fer",desc:"1er Bâtiment.",req:(s,l,e,r,a,dm,bh,b)=>(b.prism+b.collector+b.nexus)>=1},
+            {id:'b_10',name:"Architecte",desc:"10 Bâtiments.",req:(s,l,e,r,a,dm,bh,b)=>(b.prism+b.collector+b.nexus)>=10},
+            {id:'b_50',name:"Bâtisseur",desc:"50 Bâtiments.",req:(s,l,e,r,a,dm,bh,b)=>(b.prism+b.collector+b.nexus)>=50},
+            {id:'b_100',name:"Mégastructure",desc:"100 Bât.",req:(s,l,e,r,a,dm,bh,b)=>(b.prism+b.collector+b.nexus)>=100},
+            {id:'b_p10',name:"Optique",desc:"Prisme Niv.10.",req:(s,l,e,r,a,dm,bh,b)=>b.prism>=10},
+            {id:'b_c10',name:"Vortex",desc:"Collecteur Niv.10.",req:(s,l,e,r,a,dm,bh,b)=>b.collector>=10},
+            {id:'b_n10',name:"Réseau",desc:"Nexus Niv.10.",req:(s,l,e,r,a,dm,bh,b)=>b.nexus>=10},
+            
+            // --- TRANSCENDANCE ---
+            {id:'trans_1',name:"Infini",desc:"Transcendance 1x.",req:(s,l,e,r,a,dm,bh,b,t)=>t.count>=1},
+            {id:'t_c2',name:"Double Ascension",desc:"2 Transcendances.",req:(s,l,e,r,a,dm,bh,b,t)=>t.count>=2},
+            {id:'t_c5',name:"Panthéon",desc:"5 Transcendances.",req:(s,l,e,r,a,dm,bh,b,t)=>t.count>=5},
+            {id:'t_c10',name:"Univers Cendré",desc:"10 Transcendances.",req:(s,l,e,r,a,dm,bh,b,t)=>t.count>=10},
+            {id:'t_s10',name:"Étincelle",desc:"10 Éclats.",req:(s,l,e,r,a,dm,bh,b,t)=>t.shards>=10},
+            {id:'t_s100',name:"Aura Divine",desc:"100 Éclats.",req:(s,l,e,r,a,dm,bh,b,t)=>t.shards>=100},
+            {id:'t_u1',name:"Éveil Divin",desc:"1 Amélio. Divine.",req:(s,l,e,r,a,dm,bh,b,t)=>(t.upgrades.time+t.upgrades.blackhole)>=1},
+            {id:'t_u10',name:"Pleine Puissance",desc:"10 Amélio. Divines.",req:(s,l,e,r,a,dm,bh,b,t)=>(t.upgrades.time+t.upgrades.blackhole)>=10}
         ];
         
         let gameState={ secondsPassed:0,totalSeconds:0,foundEggs:[],achievements:[],soundEnabled:true,level:1,currentExp:0,talentPoints:0,talents:{xp:0,eggs:0,fortune:0,autocollect:0,blackhole:0},fragments:0,prestigeCount:0,anomaliesCaught:0,darkMatter:0,cosmic:{anomaly:0,compression:0,expansion:0},buildings:{prism:0,collector:0,nexus:0},transcendence:{count:0,shards:0,upgrades:{time:0,blackhole:0}},lastSaveTime:Date.now(),firstTime:true,blackHoleUses:0,lastBlackHoleTime:0 };
