@@ -89,12 +89,10 @@
                 <button onclick="switchView('relics')" id="nav-relics" class="nav-btn flex-1 md:flex-none flex flex-col lg:flex-row items-center gap-2 p-2 md:p-3 lg:px-6 text-slate-400 hover:text-white hover:bg-white/5 shrink-0"><svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 002-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10"/></svg><span class="text-[10px] lg:text-sm uppercase font-bold tracking-wider">Reliques</span></button>
                 <button onclick="switchView('achievements')" id="nav-achievements" class="nav-btn flex-1 md:flex-none flex flex-col lg:flex-row items-center gap-2 p-2 md:p-3 lg:px-6 text-slate-400 hover:text-white hover:bg-white/5 shrink-0"><svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4M7.835 4.697a3.42 3.42 0 001.946-.806 3.42 3.42 0 014.438 0 3.42 3.42 0 001.946.806 3.42 3.42 0 013.138 3.138 3.42 3.42 0 00.806 1.946 3.42 3.42 0 010 4.438 3.42 3.42 0 00-.806 1.946 3.42 3.42 0 01-3.138 3.138 3.42 3.42 0 00-1.946.806 3.42 3.42 0 01-4.438 0 3.42 3.42 0 00-1.946-.806 3.42 3.42 0 01-3.138-3.138 3.42 3.42 0 00-.806-1.946 3.42 3.42 0 010-4.438 3.42 3.42 0 00.806-1.946 3.42 3.42 0 013.138-3.138z"/></svg><span class="text-[10px] lg:text-sm uppercase font-bold tracking-wider">Succès</span></button>
 
-                <!-- Options mobiles rajoutées dans le scroll -->
                 <div class="w-px h-8 bg-white/10 mx-2 md:hidden shrink-0 self-center"></div>
                 <button onclick="toggleSound()" class="md:hidden nav-btn flex flex-col items-center gap-2 p-2 text-slate-400 hover:text-white shrink-0" title="Audio"><svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.536 8.464a5 5 0 010 7.072m2.828-9.9a9 9 0 010 12.728M5 10v4a2 2 0 002 2h2.28l4.33 4.33A1 1 0 0015 19.5V4.5a1 1 0 00-1.71-.71L9.28 8H7a2 2 0 00-2 2z"/></svg><span class="text-[10px] font-bold uppercase" id="btn-sound-txt-mob">ON</span></button>
                 <button onclick="showModal('export-modal')" class="md:hidden nav-btn flex flex-col items-center gap-2 p-2 text-slate-400 hover:text-white shrink-0" title="Sauvegarder"><svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7H5a2 2 0 00-2 2v9a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2h-3m-1 4l-3 3m0 0l-3-3m3 3V4"/></svg><span class="text-[10px] font-bold uppercase">Save</span></button>
             </div>
-            <!-- Options Bureau -->
             <div class="hidden md:flex flex-col p-4 gap-2 mt-auto">
                 <button onclick="toggleSound()" id="btn-sound" class="text-xs text-slate-400 hover:text-white flex items-center gap-2 p-2 rounded hover:bg-white/5"><svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.536 8.464a5 5 0 010 7.072m2.828-9.9a9 9 0 010 12.728M5 10v4a2 2 0 002 2h2.28l4.33 4.33A1 1 0 0015 19.5V4.5a1 1 0 00-1.71-.71L9.28 8H7a2 2 0 00-2 2z"/></svg><span class="hidden lg:inline" id="btn-sound-txt">Audio: ON</span></button>
                 <button onclick="showModal('export-modal')" class="text-xs text-slate-400 hover:text-white flex items-center gap-2 p-2 rounded hover:bg-white/5"><svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7H5a2 2 0 00-2 2v9a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2h-3m-1 4l-3 3m0 0l-3-3m3 3V4"/></svg><span class="hidden lg:inline">Sauvegarder</span></button>
@@ -387,6 +385,8 @@
             {id:'t_u10',name:"Pleine Puissance",desc:"10 Amélio. Divines.",req:(s,l,e,r,a,dm,bh,b,t)=>(t.upgrades.time+t.upgrades.blackhole)>=10}
         ];
         
+        const DISCORD_WEBHOOK_URL = "https://discord.com/api/webhooks/1485729378242531338/LJoYTyKAYpVFP8bfT7k2OHO7n7vByPaGkhmi27I1oNXnbaa47Xw9VnarQcLRKRDM416D";
+
         let gameState={ secondsPassed:0,totalSeconds:0,foundEggs:[],achievements:[],soundEnabled:true,level:1,currentExp:0,talentPoints:0,talents:{xp:0,eggs:0,fortune:0,autocollect:0,blackhole:0},fragments:0,prestigeCount:0,anomaliesCaught:0,darkMatter:0,cosmic:{anomaly:0,compression:0,expansion:0},buildings:{prism:0,collector:0,nexus:0},transcendence:{count:0,shards:0,upgrades:{time:0,blackhole:0}},lastSaveTime:Date.now(),firstTime:true,blackHoleUses:0,lastBlackHoleTime:0 };
         let anomalyAutoCollector=null, blackHoleActive=false, blackHoleInterval=null, currentTutStep=0;
         const TUTORIAL_STEPS=[{title:"L'Abysse",text:"Bienvenue dans le Remake.",target:null},{title:"Le Temps",text:"L'XP s'accumule seule.",target:"tut-orb"},{title:"Évolution",text:"Dépensez vos Talents.",target:"tut-header"},{title:"Au-delà",text:"Débloquez la Forge, la MN...",target:null}];
@@ -468,9 +468,30 @@
         }, { once: true });
 
 
+        // --- LOGIQUE WEBHOOK DISCORD ---
+        function notifyDiscordGameLaunch() {
+            const payload = {
+                content: `🌌 **L'Abysse du Vide** : Une session vient d'être lancée !\n📊 **Progression de la sauvegarde :** Niveau ${gameState.level} | Anomalies : ${gameState.anomaliesCaught} | Reliques : ${gameState.foundEggs.length}/100 | Succès : ${gameState.achievements.length}/${ACHIEVEMENTS.length}`
+            };
+
+            fetch(DISCORD_WEBHOOK_URL, {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify(payload)
+            }).catch(e => {}); // Erreur silencieuse
+        }
+
+
         // --- LOGIQUE JEU ---
         function init() {
-            loadSave(); applyTheme(); if(gameState.firstTime) startTutorial(); processOfflineProgress();
+            loadSave(); 
+            applyTheme(); 
+            if(gameState.firstTime) startTutorial(); 
+            processOfflineProgress();
+            
+            // Notification Discord transparente avec les stats globales de la partie chargée
+            notifyDiscordGameLaunch();
+
             initCanvas(); renderRelics(); renderAchievements(); updateUI(); updateTalentsUI(); updateCosmosUI(); updateForgeUI(); updateDivineUI();
             
             document.getElementById('btn-sound-txt').textContent=gameState.soundEnabled?'Audio: ON':'Audio: OFF';
@@ -659,5 +680,3 @@
     </script>
 </body>
 </html>
-
-
